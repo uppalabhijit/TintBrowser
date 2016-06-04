@@ -15,6 +15,7 @@
 
 package org.tint.ui.activities;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -28,7 +29,6 @@ import android.app.PendingIntent;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,14 +48,13 @@ import org.tint.ui.dialogs.YesNoRememberDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.preferences.PreferencesActivity;
+import org.tint.ui.uihelpers.BrowserActivityMenuClickVisitor;
+import org.tint.ui.uihelpers.BrowserActivityMenuOptions;
+import org.tint.ui.uihelpers.TintActivityResultHandler;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
 public class TintBrowserActivity extends BaseActivity {
-
-    public static final int ACTIVITY_BOOKMARKS = 0;
-    public static final int ACTIVITY_OPEN_FILE_CHOOSER = 1;
 
     public static final int CONTEXT_MENU_OPEN = Menu.FIRST + 10;
     public static final int CONTEXT_MENU_OPEN_IN_NEW_TAB = Menu.FIRST + 11;
@@ -294,88 +293,15 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent i;
-
-        switch (item.getItemId()) {
-            case R.id.MainActivity_MenuAddTab:
-                mUIManager.addTab(true, PreferenceManager.getDefaultSharedPreferences(this).
-                        getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
-                return true;
-
-            case R.id.MainActivity_MenuCloseTab:
-                mUIManager.closeCurrentTab();
-                return true;
-
-            case R.id.MainActivity_MenuAddBookmark:
-                mUIManager.addBookmarkFromCurrentPage();
-                return true;
-
-            case R.id.MainActivity_MenuBookmarks:
-                mUIManager.openBookmarksActivityForResult();
-                return true;
-
-            case R.id.MainActivity_MenuIncognitoTab:
-                mUIManager.togglePrivateBrowsing();
-                return true;
-
-            case R.id.MainActivity_MenuFullScreen:
-                mUIManager.toggleFullScreen();
-                return true;
-
-            case R.id.MainActivity_MenuSharePage:
-                mUIManager.shareCurrentPage();
-                return true;
-
-            case R.id.MainActivity_MenuSearch:
-                mUIManager.startSearch();
-                return true;
-
-            case R.id.MainActivity_MenuPreferences:
-                i = new Intent(this, PreferencesActivity.class);
-                startActivity(i);
-                return true;
-
-            default:
-                if (Controller.getInstance().getAddonManager().onContributedMainMenuItemSelected(
-                        this,
-                        item.getItemId(),
-                        mUIManager.getCurrentWebView())) {
-                    return true;
-                } else {
-                    return super.onOptionsItemSelected(item);
-                }
-        }
+        BrowserActivityMenuClickVisitor browserActivityMenuClickVisitor = new BrowserActivityMenuClickVisitor(new
+                WeakReference<TintBrowserActivity>(this), mUIManager, item);
+        return BrowserActivityMenuOptions.getById(item.getItemId()).accept(browserActivityMenuClickVisitor);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
-        if (requestCode == ACTIVITY_BOOKMARKS) {
-            if (resultCode == RESULT_OK) {
-                if (intent != null) {
-                    Bundle b = intent.getExtras();
-                    if (b != null) {
-                        if (b.getBoolean(Constants.EXTRA_NEW_TAB)) {
-                            mUIManager.addTab(false, PreferenceManager.getDefaultSharedPreferences(this).
-                                    getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
-                        }
-
-                        mUIManager.loadUrl(b.getString(Constants.EXTRA_URL));
-                    }
-                }
-            }
-        } else if (requestCode == ACTIVITY_OPEN_FILE_CHOOSER) {
-            if (mUIManager.getUploadMessage() == null) {
-                return;
-            }
-
-            Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
-            mUIManager.getUploadMessage().onReceiveValue(result);
-            mUIManager.setUploadMessage(null);
-        }
-
-        mUIManager.onActivityResult(requestCode, resultCode, intent);
+        new TintActivityResultHandler(new WeakReference<TintBrowserActivity>(this), mUIManager).onActivityResult(requestCode, resultCode, intent);
     }
 
     @Override
