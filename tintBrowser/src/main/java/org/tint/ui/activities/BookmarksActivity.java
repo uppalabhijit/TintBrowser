@@ -38,7 +38,6 @@ import org.tint.ui.uihelpers.BookmarksMenuClickVisitor;
 public class BookmarksActivity extends Activity {
 
     private static final String EXTRA_SELECTED_TAB_INDEX = "EXTRA_SELECTED_TAB_INDEX";
-	
     private UIManager mUIManager;
 
     @Override
@@ -66,7 +65,6 @@ public class BookmarksActivity extends Activity {
         if ((savedInstanceState != null) &&
                 (savedInstanceState.containsKey(EXTRA_SELECTED_TAB_INDEX))) {
             int selectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_TAB_INDEX);
-        	
             if ((selectedIndex == 0) ||
                     (selectedIndex == 1)) {
                 actionBar.setSelectedNavigationItem(selectedIndex);
@@ -83,7 +81,6 @@ public class BookmarksActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.bookmarks_activity_menu, menu);
-		
         return true;
     }
 
