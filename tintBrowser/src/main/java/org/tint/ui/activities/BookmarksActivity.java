@@ -20,7 +20,6 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,18 +34,28 @@ import org.tint.ui.tabs.GenericTabListener;
 import org.tint.ui.uihelpers.BookmarkMenuOptions;
 import org.tint.ui.uihelpers.BookmarksMenuClickVisitor;
 
-public class BookmarksActivity extends Activity {
+public class BookmarksActivity extends BaseActivity {
 
     private static final String EXTRA_SELECTED_TAB_INDEX = "EXTRA_SELECTED_TAB_INDEX";
     private UIManager mUIManager;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle(R.string.BookmarksTitle);
+    protected int getLayoutId() {
+        return -1;
+    }
 
+    @Override
+    protected int getTitleId() {
+        return R.string.BookmarksTitle;
+    }
+
+    @Override
+    protected void doOnCreate(Bundle savedInstanceState) {
         mUIManager = Controller.getInstance().getUIManager();
+    }
 
+    @Override
+    protected void initActionBar(Bundle savedInstanceState) {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setHomeButtonEnabled(true);
@@ -61,7 +70,6 @@ public class BookmarksActivity extends Activity {
         tab.setText(R.string.HistoryTabTitle);
         tab.setTabListener(new GenericTabListener<HistoryFragment>(this, "history", HistoryFragment.class));
         actionBar.addTab(tab);
-
         if ((savedInstanceState != null) &&
                 (savedInstanceState.containsKey(EXTRA_SELECTED_TAB_INDEX))) {
             int selectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_TAB_INDEX);
@@ -79,9 +87,8 @@ public class BookmarksActivity extends Activity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    protected void doCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.bookmarks_activity_menu, menu);
-        return true;
     }
 
     @Override
