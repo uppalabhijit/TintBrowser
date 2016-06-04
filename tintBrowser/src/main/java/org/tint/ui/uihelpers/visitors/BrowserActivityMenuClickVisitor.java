@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers;
+package org.tint.ui.uihelpers.visitors;
 
 import android.content.Intent;
 import android.preference.PreferenceManager;

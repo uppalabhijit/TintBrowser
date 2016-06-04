@@ -1,6 +1,7 @@
 package org.tint.ui.uihelpers;
 
 import org.tint.R;
+import org.tint.ui.uihelpers.visitors.BookmarksMenuVisitor;
 
 /**
  * Created by Abhijit on 2016-05-28.

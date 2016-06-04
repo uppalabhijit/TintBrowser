@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers;
+package org.tint.ui.uihelpers.visitors;
 
 /**
  * Created by Abhijit on 2016-05-28.

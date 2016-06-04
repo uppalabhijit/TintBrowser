@@ -44,7 +44,7 @@ import org.tint.ui.dialogs.YesNoRememberDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.uihelpers.BrowserActivityMenuClickVisitor;
+import org.tint.ui.uihelpers.visitors.BrowserActivityMenuClickVisitor;
 import org.tint.ui.uihelpers.BrowserActivityMenuOptions;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
 import org.tint.utils.ApplicationUtils;

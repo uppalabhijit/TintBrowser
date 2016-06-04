@@ -32,7 +32,7 @@ import org.tint.ui.fragments.HistoryFragment;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.tabs.GenericTabListener;
 import org.tint.ui.uihelpers.BookmarkMenuOptions;
-import org.tint.ui.uihelpers.BookmarksMenuClickVisitor;
+import org.tint.ui.uihelpers.visitors.BookmarksMenuClickVisitor;
 
 public class BookmarksActivity extends BaseActivity {
 
