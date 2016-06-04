@@ -27,28 +27,29 @@ public class TintActivityResultHandler {
         TintBrowserActivity tintBrowserActivity = tintBrowserActivityWeakReference.get();
         if (requestCode == Constants.ACTIVITY_BOOKMARKS) {
             if (resultCode == tintBrowserActivity.RESULT_OK) {
-                if (intent != null) {
-                    Bundle b = intent.getExtras();
-                    if (b != null) {
-                        if (b.getBoolean(Constants.EXTRA_NEW_TAB)) {
-                            uiManager.addTab(false, PreferenceManager.getDefaultSharedPreferences(tintBrowserActivity).
-                                    getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
-                        }
-
-                        uiManager.loadUrl(b.getString(Constants.EXTRA_URL));
-                    }
-                }
+                handleOpeningBookmark(intent, tintBrowserActivity);
             }
         } else if (requestCode == Constants.ACTIVITY_OPEN_FILE_CHOOSER) {
             if (uiManager.getUploadMessage() == null) {
                 return;
             }
-
             Uri result = intent == null || resultCode != tintBrowserActivity.RESULT_OK ? null : intent.getData();
             uiManager.getUploadMessage().onReceiveValue(result);
             uiManager.setUploadMessage(null);
         }
-
         uiManager.onActivityResult(requestCode, resultCode, intent);
+    }
+
+    private void handleOpeningBookmark(Intent intent, TintBrowserActivity tintBrowserActivity) {
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                if (bundle.getBoolean(Constants.EXTRA_NEW_TAB)) {
+                    uiManager.addTab(false, PreferenceManager.getDefaultSharedPreferences(tintBrowserActivity).
+                            getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
+                }
+                uiManager.loadUrl(bundle.getString(Constants.EXTRA_URL));
+            }
+        }
     }
 }
