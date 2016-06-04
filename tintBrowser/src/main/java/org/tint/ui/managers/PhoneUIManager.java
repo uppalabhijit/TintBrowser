@@ -438,7 +438,7 @@ public class PhoneUIManager extends BasePhoneUIManager {
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		if ((requestCode == TintBrowserActivity.ACTIVITY_BOOKMARKS) &&
+		if ((requestCode == Constants.ACTIVITY_BOOKMARKS) &&
 				(resultCode == Activity.RESULT_OK)) {
 			if (mPanel.isPanelShown()) {
 				mPanel.hidePanel();

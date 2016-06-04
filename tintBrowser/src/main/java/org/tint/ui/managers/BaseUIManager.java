@@ -217,7 +217,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
 	@Override
 	public void openBookmarksActivityForResult() {
 		Intent i = new Intent(mActivity, BookmarksActivity.class);
-    	mActivity.startActivityForResult(i, TintBrowserActivity.ACTIVITY_BOOKMARKS);
+    	mActivity.startActivityForResult(i, Constants.ACTIVITY_BOOKMARKS);
 	}
 	
 	@Override

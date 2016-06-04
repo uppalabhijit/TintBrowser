@@ -102,7 +102,7 @@ public class CustomWebChromeClient extends WebChromeClient {
 		i.setType((acceptType == null || acceptType.isEmpty()) ? "*/*" : acceptType);
 		mUIManager.getMainActivity().startActivityForResult(
 				Intent.createChooser(i,  mUIManager.getMainActivity().getString(R.string.FileChooserPrompt)),
-				TintBrowserActivity.ACTIVITY_OPEN_FILE_CHOOSER);
+				Constants.ACTIVITY_OPEN_FILE_CHOOSER);
 	}
 	
 	public void openFileChooser(ValueCallback<Uri> uploadMsg) {
@@ -112,7 +112,7 @@ public class CustomWebChromeClient extends WebChromeClient {
 		i.setType("*/*");
 		mUIManager.getMainActivity().startActivityForResult(
 				Intent.createChooser(i,  mUIManager.getMainActivity().getString(R.string.FileChooserPrompt)),
-				TintBrowserActivity.ACTIVITY_OPEN_FILE_CHOOSER);
+				Constants.ACTIVITY_OPEN_FILE_CHOOSER);
 	}
 	
 	@Override
