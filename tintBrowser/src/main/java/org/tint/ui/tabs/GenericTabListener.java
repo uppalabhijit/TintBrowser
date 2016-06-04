@@ -25,9 +25,9 @@ import android.os.Bundle;
 public class GenericTabListener<T extends Fragment> implements ActionBar.TabListener {
 
 	private Fragment mFragment;
-    private Activity mActivity;
-    private String mTag;
-    private Class<T> mClass;
+    private final Activity mActivity;
+    private final String mTag;
+    private final Class<T> mClass;
 	
     /** Constructor used each time a new tab is created.
      * @param activity  The host Activity, used to instantiate the fragment

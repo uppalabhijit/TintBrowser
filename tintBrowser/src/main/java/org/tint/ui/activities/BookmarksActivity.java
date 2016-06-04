@@ -73,8 +73,7 @@ public class BookmarksActivity extends BaseActivity {
         if ((savedInstanceState != null) &&
                 (savedInstanceState.containsKey(EXTRA_SELECTED_TAB_INDEX))) {
             int selectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_TAB_INDEX);
-            if ((selectedIndex == 0) ||
-                    (selectedIndex == 1)) {
+            if ((selectedIndex == 0) || (selectedIndex == 1)) {
                 actionBar.setSelectedNavigationItem(selectedIndex);
             }
         }
