@@ -17,15 +17,11 @@ package org.tint.ui.activities;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -36,11 +32,11 @@ import android.preference.PreferenceManager;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.webkit.WebIconDatabase;
-import android.widget.Toast;
 
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.Controller;
+import org.tint.domain.DownloadStatus;
 import org.tint.model.DownloadItem;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.components.CustomWebView;
@@ -412,22 +408,6 @@ public class TintBrowserActivity extends BaseActivity {
         db.open(getDir("icons", 0).getPath());
     }
 
-    private void showNotification(String notificationTitle, String title, String message) {
-        Intent notificationIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-        PendingIntent contentIntent = PendingIntent.getActivity(this.getApplicationContext(), 0, notificationIntent, 0);
-
-        Notification notification = new Notification.Builder(this)
-                .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                .setTicker(notificationTitle)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setContentIntent(contentIntent)
-                .getNotification();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(new Random().nextInt(), notification);
-    }
-
     private void onReceivedDownloadNotification(Context context, Intent intent) {
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
@@ -439,48 +419,10 @@ public class TintBrowserActivity extends BaseActivity {
                 Query query = new Query();
                 query.setFilterById(id);
                 Cursor cursor = downloadManager.query(query);
-
                 if (cursor.moveToFirst()) {
-                    int localUriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-                    int reasonIndex = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
                     int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-
                     int status = cursor.getInt(statusIndex);
-
-                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        String localUri = cursor.getString(localUriIndex);
-
-                        Toast.makeText(context, String.format(getString(R.string.DownloadComplete), localUri), Toast.LENGTH_SHORT).show();
-                        Controller.getInstance().getDownloadsList().remove(item);
-
-                        showNotification(getString(R.string.DownloadComplete), item.getFileName(), getString(R.string.DownloadComplete));
-
-                    } else if (status == DownloadManager.STATUS_FAILED) {
-                        int reason = cursor.getInt(reasonIndex);
-
-                        String message;
-                        switch (reason) {
-                            case DownloadManager.ERROR_FILE_ERROR:
-                            case DownloadManager.ERROR_DEVICE_NOT_FOUND:
-                            case DownloadManager.ERROR_INSUFFICIENT_SPACE:
-                                message = getString(R.string.DownloadErrorDisk);
-                                break;
-                            case DownloadManager.ERROR_HTTP_DATA_ERROR:
-                            case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
-                                message = getString(R.string.DownloadErrorHttp);
-                                break;
-                            case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
-                                message = getString(R.string.DownloadErrorRedirection);
-                                break;
-                            default:
-                                message = getString(R.string.DownloadErrorUnknown);
-                                break;
-                        }
-
-                        Toast.makeText(context, String.format(getString(R.string.DownloadFailedWithErrorMessage), message), Toast.LENGTH_SHORT).show();
-                        Controller.getInstance().getDownloadsList().remove(item);
-                    }
-
+                    DownloadStatus.getByStatus(status).execute(context, cursor, item);
                 }
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
