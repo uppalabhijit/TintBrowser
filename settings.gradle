@@ -1,0 +1,2 @@
+include ':tintBrowser', ':tintBrowserAddonFrameworkLibrary'
+project(':tintBrowserAddonFrameworkLibrary').projectDir=new File('../TintBrowserAddonFrameworkLibrary/app')
