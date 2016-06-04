@@ -36,19 +36,19 @@ import org.tint.utils.Constants;
 
 public class EditBookmarkActivity extends BaseActivity {
 
-    private long mId = -1;
+    private long id = -1;
 
-    private EditText mLabel;
-    private EditText mUrl;
+    private EditText label;
+    private EditText url;
 
-    private Spinner mFoldersSpinner;
+    private Spinner foldersSpinner;
 
-    private EditText mNewFolderName;
+    private EditText newFolderName;
 
-    private Button mOk;
-    private Button mCancel;
+    private Button ok;
+    private Button cancel;
 
-    private List<FolderItem> mFolders;
+    private List<FolderItem> folders;
 
     @Override
     protected int getLayoutId() {
@@ -62,28 +62,28 @@ public class EditBookmarkActivity extends BaseActivity {
 
     @Override
     protected void doOnCreate(Bundle savedInstanceState) {
-        mFolders = BookmarksWrapper.getFirstLevelFoldersList(getContentResolver());
-        mFolders.add(0, new FolderItem(-1, getString(R.string.Bookmarks)));
-        mFolders.add(0, new FolderItem(-2, getString(R.string.NewFolder)));
+        folders = BookmarksWrapper.getFirstLevelFoldersList(getContentResolver());
+        folders.add(0, new FolderItem(-1, getString(R.string.Bookmarks)));
+        folders.add(0, new FolderItem(-2, getString(R.string.NewFolder)));
 
-        mLabel = (EditText) findViewById(R.id.EditBookmarkActivity_LabelEdit);
-        mUrl = (EditText) findViewById(R.id.EditBookmarkActivity_UrlEdit);
+        label = (EditText) findViewById(R.id.EditBookmarkActivity_LabelEdit);
+        url = (EditText) findViewById(R.id.EditBookmarkActivity_UrlEdit);
 
-        mFoldersSpinner = (Spinner) findViewById(R.id.EditBookmarkActivity_FolderSpinner);
+        foldersSpinner = (Spinner) findViewById(R.id.EditBookmarkActivity_FolderSpinner);
 
-        FoldersAdapter adapter = new FoldersAdapter(this, mFolders);
+        FoldersAdapter adapter = new FoldersAdapter(this, folders);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mFoldersSpinner.setAdapter(adapter);
+        foldersSpinner.setAdapter(adapter);
 
-        mFoldersSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        foldersSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 if (position == 0) {
-                    mNewFolderName.setVisibility(View.VISIBLE);
-                    mNewFolderName.requestFocus();
+                    newFolderName.setVisibility(View.VISIBLE);
+                    newFolderName.requestFocus();
                 } else {
-                    mNewFolderName.setVisibility(View.GONE);
+                    newFolderName.setVisibility(View.GONE);
                 }
             }
 
@@ -93,12 +93,12 @@ public class EditBookmarkActivity extends BaseActivity {
         });
 
         // Default to root folder.
-        mFoldersSpinner.setSelection(1);
+        foldersSpinner.setSelection(1);
 
-        mNewFolderName = (EditText) findViewById(R.id.EditBookmarkActivity_FolderValue);
+        newFolderName = (EditText) findViewById(R.id.EditBookmarkActivity_FolderValue);
 
-        mOk = (Button) findViewById(R.id.EditBookmarkActivity_OK);
-        mOk.setOnClickListener(new OnClickListener() {
+        ok = (Button) findViewById(R.id.EditBookmarkActivity_OK);
+        ok.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 if (save()) {
@@ -108,8 +108,8 @@ public class EditBookmarkActivity extends BaseActivity {
             }
         });
 
-        mCancel = (Button) findViewById(R.id.EditBookmarkActivity_Cancel);
-        mCancel.setOnClickListener(new OnClickListener() {
+        cancel = (Button) findViewById(R.id.EditBookmarkActivity_Cancel);
+        cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 setResult(RESULT_CANCELED);
@@ -121,26 +121,26 @@ public class EditBookmarkActivity extends BaseActivity {
         if (extras != null) {
             String label = extras.getString(Constants.EXTRA_LABEL);
             if (!TextUtils.isEmpty(label)) {
-                mLabel.setText(label);
+                this.label.setText(label);
             }
 
             String url = extras.getString(Constants.EXTRA_URL);
             if (!TextUtils.isEmpty(url)) {
-                mUrl.setText(url);
+                this.url.setText(url);
             }
 
             // This is a bit dirty...
             long folderId = extras.getLong(Constants.EXTRA_FOLDER_ID);
             if (folderId != -1) {
-                for (int i = 0; i < mFolders.size(); i++) {
-                    if (mFolders.get(i).getId() == folderId) {
-                        mFoldersSpinner.setSelection(i);
+                for (int i = 0; i < folders.size(); i++) {
+                    if (folders.get(i).getId() == folderId) {
+                        foldersSpinner.setSelection(i);
                         break;
                     }
                 }
             }
 
-            mId = extras.getLong(Constants.EXTRA_ID);
+            id = extras.getLong(Constants.EXTRA_ID);
         }
     }
 
@@ -171,22 +171,22 @@ public class EditBookmarkActivity extends BaseActivity {
     }
 
     private boolean save() {
-        String label = mLabel.getText().toString();
-        String url = mUrl.getText().toString();
+        String label = this.label.getText().toString();
+        String url = this.url.getText().toString();
 
         if ((!TextUtils.isEmpty(label)) &&
                 (!TextUtils.isEmpty(url))) {
 
             long folderId = -1;
-            int folderSpinnerSelection = mFoldersSpinner.getSelectedItemPosition();
+            int folderSpinnerSelection = foldersSpinner.getSelectedItemPosition();
 
             switch (folderSpinnerSelection) {
                 case 0:
-                    if (TextUtils.isEmpty(mNewFolderName.getText().toString())) {
+                    if (TextUtils.isEmpty(newFolderName.getText().toString())) {
                         Toast.makeText(this, R.string.ProvideNewFolderName, Toast.LENGTH_SHORT).show();
                         return false;
                     } else {
-                        folderId = BookmarksWrapper.getFolderId(getContentResolver(), mNewFolderName.getText().toString(), true);
+                        folderId = BookmarksWrapper.getFolderId(getContentResolver(), newFolderName.getText().toString(), true);
                     }
                     break;
 
@@ -194,11 +194,11 @@ public class EditBookmarkActivity extends BaseActivity {
                     folderId = -1;
                     break;
                 default:
-                    folderId = mFolders.get(folderSpinnerSelection).getId();
+                    folderId = folders.get(folderSpinnerSelection).getId();
                     break;
             }
 
-            BookmarksWrapper.setAsBookmark(getContentResolver(), mId, folderId, label, url, true);
+            BookmarksWrapper.setAsBookmark(getContentResolver(), id, folderId, label, url, true);
             return true;
         } else {
             Toast.makeText(this, R.string.AddBookmarkLabelOrUrlEmpty, Toast.LENGTH_SHORT).show();

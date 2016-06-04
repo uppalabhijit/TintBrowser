@@ -64,18 +64,18 @@ public class TintBrowserActivity extends BaseActivity {
     public static final int CONTEXT_MENU_SEND_MAIL = Menu.FIRST + 15;
     public static final int CONTEXT_MENU_SHARE = Menu.FIRST + 16;
 
-    private OnSharedPreferenceChangeListener mPreferenceChangeListener;
+    private OnSharedPreferenceChangeListener preferenceChangeListener;
 
-    private UIManager mUIManager;
+    private UIManager uiManager;
 
-    private BroadcastReceiver mDownloadsReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver downloadsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             onReceivedDownloadNotification(context, intent);
         }
     };
 
-    private BroadcastReceiver mPackagesReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver packagesReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Controller.getInstance().getAddonManager().unbindAddons();
@@ -83,7 +83,7 @@ public class TintBrowserActivity extends BaseActivity {
         }
     };
 
-    private IntentFilter mPackagesFilter;
+    private IntentFilter packagesFilter;
 
     @Override
     protected int getLayoutId() {
@@ -97,18 +97,18 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     protected void doOnCreate(Bundle savedInstanceState) {
-        mUIManager = UIFactory.createUIManager(this);
+        uiManager = UIFactory.createUIManager(this);
 
 
-        Controller.getInstance().init(mUIManager, this);
+        Controller.getInstance().init(uiManager, this);
         Controller.getInstance().getAddonManager().bindAddons();
 
         initializeWebIconDatabase();
 
-        mPreferenceChangeListener = new OnSharedPreferenceChangeListener() {
+        preferenceChangeListener = new OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                mUIManager.onSharedPreferenceChanged(sharedPreferences, key);
+                uiManager.onSharedPreferenceChanged(sharedPreferences, key);
 
                 // If the user changed the history size, reset the last history truncation date.
                 if (Constants.PREFERENCE_HISTORY_SIZE.equals(key)) {
@@ -121,16 +121,16 @@ public class TintBrowserActivity extends BaseActivity {
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        prefs.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+        prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
 
-        mPackagesFilter = new IntentFilter();
-        mPackagesFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        mPackagesFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        mPackagesFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        mPackagesFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        mPackagesFilter.addDataScheme("package");
+        packagesFilter = new IntentFilter();
+        packagesFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        packagesFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        packagesFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        packagesFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        packagesFilter.addDataScheme("package");
 
-        registerReceiver(mPackagesReceiver, mPackagesFilter);
+        registerReceiver(packagesReceiver, packagesFilter);
 
         Intent startIntent = getIntent();
 
@@ -172,7 +172,7 @@ public class TintBrowserActivity extends BaseActivity {
             }
         }
 
-        mUIManager.onNewIntent(startIntent);
+        uiManager.onNewIntent(startIntent);
 
         if (prefs.contains(Constants.TECHNICAL_PREFERENCE_SAVED_TABS)) {
             final Set<String> tabs = prefs.getStringSet(Constants.TECHNICAL_PREFERENCE_SAVED_TABS, null);
@@ -237,7 +237,7 @@ public class TintBrowserActivity extends BaseActivity {
         getActionBar().addOnMenuVisibilityListener(new OnMenuVisibilityListener() {
             @Override
             public void onMenuVisibilityChanged(boolean isVisible) {
-                mUIManager.onMenuVisibilityChanged(isVisible);
+                uiManager.onMenuVisibilityChanged(isVisible);
             }
         });
 
@@ -248,10 +248,10 @@ public class TintBrowserActivity extends BaseActivity {
 
         for (String url : tabs) {
             if (first) {
-                mUIManager.loadUrl(url);
+                uiManager.loadUrl(url);
                 first = false;
             } else {
-                mUIManager.addTab(url, !first, false);
+                uiManager.addTab(url, !first, false);
             }
         }
     }
@@ -265,18 +265,18 @@ public class TintBrowserActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        BaseWebViewFragment currentFragment = mUIManager.getCurrentWebViewFragment();
+        BaseWebViewFragment currentFragment = uiManager.getCurrentWebViewFragment();
 
         menu.setGroupEnabled(
                 R.id.MainActivity_DisabledOnStartPageMenuGroup,
                 currentFragment != null && !currentFragment.isStartPageShown());
 
-        CustomWebView currentWebView = mUIManager.getCurrentWebView();
+        CustomWebView currentWebView = uiManager.getCurrentWebView();
 
         boolean privateBrowsing = currentWebView != null && currentWebView.isPrivateBrowsingEnabled();
 
         menu.findItem(R.id.MainActivity_MenuIncognitoTab).setChecked(privateBrowsing);
-        menu.findItem(R.id.MainActivity_MenuFullScreen).setChecked(mUIManager.isFullScreen());
+        menu.findItem(R.id.MainActivity_MenuFullScreen).setChecked(uiManager.isFullScreen());
 
         menu.removeGroup(R.id.MainActivity_AddonsMenuGroup);
 
@@ -294,34 +294,34 @@ public class TintBrowserActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         BrowserActivityMenuClickVisitor browserActivityMenuClickVisitor = new BrowserActivityMenuClickVisitor(new
-                WeakReference<TintBrowserActivity>(this), mUIManager, item);
+                WeakReference<TintBrowserActivity>(this), uiManager, item);
         return BrowserActivityMenuOptions.getById(item.getItemId()).accept(browserActivityMenuClickVisitor);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        new TintActivityResultHandler(new WeakReference<TintBrowserActivity>(this), mUIManager).onActivityResult(requestCode, resultCode, intent);
+        new TintActivityResultHandler(new WeakReference<TintBrowserActivity>(this), uiManager).onActivityResult(requestCode, resultCode, intent);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        mUIManager.onNewIntent(intent);
+        uiManager.onNewIntent(intent);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (mUIManager.onKeyBack()) {
+                if (uiManager.onKeyBack()) {
                     return true;
                 } else {
                     moveTaskToBack(true);
                     return true;
                 }
             case KeyEvent.KEYCODE_SEARCH:
-                if (mUIManager.onKeySearch()) {
+                if (uiManager.onKeySearch()) {
                     return true;
                 } else {
                     return super.onKeyUp(keyCode, event);
@@ -335,21 +335,21 @@ public class TintBrowserActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
 
-        mUIManager.onMainActivityPause();
-        unregisterReceiver(mDownloadsReceiver);
+        uiManager.onMainActivityPause();
+        unregisterReceiver(downloadsReceiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mUIManager.onMainActivityResume();
+        uiManager.onMainActivityResume();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         filter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
 
-        registerReceiver(mDownloadsReceiver, filter);
+        registerReceiver(downloadsReceiver, filter);
     }
 
     @Override
@@ -359,7 +359,7 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     protected void onStop() {
-        mUIManager.saveTabs();
+        uiManager.saveTabs();
         super.onStop();
     }
 
@@ -367,8 +367,8 @@ public class TintBrowserActivity extends BaseActivity {
     protected void onDestroy() {
         Controller.getInstance().getAddonManager().unbindAddons();
         WebIconDatabase.getInstance().close();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mPreferenceChangeListener);
-        unregisterReceiver(mPackagesReceiver);
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+        unregisterReceiver(packagesReceiver);
 
         super.onDestroy();
     }
@@ -390,17 +390,17 @@ public class TintBrowserActivity extends BaseActivity {
     @Override
     public void onActionModeFinished(ActionMode mode) {
         super.onActionModeFinished(mode);
-        mUIManager.onActionModeFinished(mode);
+        uiManager.onActionModeFinished(mode);
     }
 
     @Override
     public void onActionModeStarted(ActionMode mode) {
         super.onActionModeStarted(mode);
-        mUIManager.onActionModeStarted(mode);
+        uiManager.onActionModeStarted(mode);
     }
 
     public UIManager getUIManager() {
-        return mUIManager;
+        return uiManager;
     }
 
     /**

@@ -37,7 +37,7 @@ import org.tint.ui.uihelpers.BookmarksMenuClickVisitor;
 public class BookmarksActivity extends BaseActivity {
 
     private static final String EXTRA_SELECTED_TAB_INDEX = "EXTRA_SELECTED_TAB_INDEX";
-    private UIManager mUIManager;
+    private UIManager uiManager;
 
     @Override
     protected int getLayoutId() {
@@ -51,7 +51,7 @@ public class BookmarksActivity extends BaseActivity {
 
     @Override
     protected void doOnCreate(Bundle savedInstanceState) {
-        mUIManager = Controller.getInstance().getUIManager();
+        uiManager = Controller.getInstance().getUIManager();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class BookmarksActivity extends BaseActivity {
 
         menu.removeGroup(R.id.BookmarksActivity_AddonsMenuGroup);
 
-        List<AddonMenuItem> contributedMenuItems = Controller.getInstance().getAddonManager().getContributedHistoryBookmarksMenuItems(mUIManager.getCurrentWebView());
+        List<AddonMenuItem> contributedMenuItems = Controller.getInstance().getAddonManager().getContributedHistoryBookmarksMenuItems(uiManager.getCurrentWebView());
         for (AddonMenuItem item : contributedMenuItems) {
             menu.add(R.id.BookmarksActivity_AddonsMenuGroup, item.getAddon().getMenuId(), 0, item.getMenuItem());
         }
