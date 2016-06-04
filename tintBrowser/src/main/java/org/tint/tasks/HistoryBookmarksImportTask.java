@@ -15,23 +15,18 @@
 
 package org.tint.tasks;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.*;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,20 +40,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-
 public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, String> {
 
-	private Context mContext;
-	private IHistoryBookmaksImportListener mListener;
+	private Context context;
+	private IHistoryBookmaksImportListener iHistoryBookmaksImportListener;
 
-	public HistoryBookmarksImportTask(Context context, IHistoryBookmaksImportListener listener) {
-		mContext = context;
-		mListener = listener;
+	public HistoryBookmarksImportTask(Context context, IHistoryBookmaksImportListener iHistoryBookmaksImportListener) {
+		this.context = context;
+		this.iHistoryBookmaksImportListener = iHistoryBookmaksImportListener;
 	}
 
 	@Override
@@ -77,22 +66,22 @@ public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, Strin
 			} else if (file.getName().toLowerCase(Locale.US).endsWith(".xml")) {
 				return readAsXml(file);
 			} else {
-				return mContext.getString(R.string.HistoryBookmarksImportErrorInvalidFileFormat);
+				return context.getString(R.string.HistoryBookmarksImportErrorInvalidFileFormat);
 			}
 
 		} else {
-			return mContext.getString(R.string.HistoryBookmarksImportFileUnavailable);
+			return context.getString(R.string.HistoryBookmarksImportFileUnavailable);
 		}
 	}
 
 	@Override
 	protected void onProgressUpdate(Integer... values) {
-		mListener.onImportProgress(values[0], values[1], values[2]);
+		iHistoryBookmaksImportListener.onImportProgress(values[0], values[1], values[2]);
 	}
 
 	@Override
 	protected void onPostExecute(String result) {
-		mListener.onImportDone(result);
+		iHistoryBookmaksImportListener.onImportDone(result);
 	}
 	
 	private String readAsJSON(File file) {
@@ -157,7 +146,7 @@ public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, Strin
 					values.put(BookmarksProvider.Columns.IS_FOLDER, 1);
 					values.put(BookmarksProvider.Columns.PARENT_FOLDER_ID, -1);
 					
-					Uri insertionUri = mContext.getContentResolver().insert(BookmarksProvider.BOOKMARKS_URI, values);
+					Uri insertionUri = context.getContentResolver().insert(BookmarksProvider.BOOKMARKS_URI, values);
 					String insertionString = insertionUri.toString();
 					
 					// Get the new id for the current folder.
@@ -192,7 +181,7 @@ public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, Strin
 								
 								String whereClause = BookmarksProvider.Columns._ID + " = " + folder.getNewId();
 								
-								mContext.getContentResolver().update(BookmarksProvider.BOOKMARKS_URI, values, whereClause, null);
+								context.getContentResolver().update(BookmarksProvider.BOOKMARKS_URI, values, whereClause, null);
 							}
 						}
 					}
@@ -280,7 +269,7 @@ public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, Strin
 
 		if (insertValues != null) {
 			publishProgress(7, 0, 0);
-			mContext.getContentResolver().bulkInsert(BookmarksProvider.BOOKMARKS_URI, insertValues.toArray(new ContentValues[insertValues.size()]));
+			context.getContentResolver().bulkInsert(BookmarksProvider.BOOKMARKS_URI, insertValues.toArray(new ContentValues[insertValues.size()]));
 		}
 
 		return null;
@@ -386,7 +375,7 @@ public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, Strin
 
 		if (values != null) {
 			publishProgress(7, 0, 0);
-			mContext.getContentResolver().bulkInsert(BookmarksProvider.BOOKMARKS_URI, values.toArray(new ContentValues[values.size()]));
+			context.getContentResolver().bulkInsert(BookmarksProvider.BOOKMARKS_URI, values.toArray(new ContentValues[values.size()]));
 		}
 
 		return null;
@@ -443,20 +432,20 @@ public class HistoryBookmarksImportTask extends AsyncTask<String, Integer, Strin
 	 * old parent id. E.g. the parent id in the export file.
 	 */
 	private class Folder {		
-		private long mNewId;
-		private long mOldParentId;
+		private long newId;
+		private long oldParentId;
 		
 		public Folder(long newId, long oldParentId) {			
-			mNewId = newId;
-			mOldParentId = oldParentId;
+			this.newId = newId;
+			this.oldParentId = oldParentId;
 		}
 		
 		public long getNewId() {
-			return mNewId;
+			return newId;
 		}
 		
 		public long getOldParentId() {
-			return mOldParentId;
+			return oldParentId;
 		}
 	}
 

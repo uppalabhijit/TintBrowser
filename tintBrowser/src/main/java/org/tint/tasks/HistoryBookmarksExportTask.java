@@ -38,12 +38,12 @@ import android.os.Environment;
 
 public class HistoryBookmarksExportTask extends AsyncTask<Cursor, Integer, String> {
 
-	private Context mContext;
-	private IHistoryBookmaksExportListener mListener;
+	private Context context;
+	private IHistoryBookmaksExportListener iHistoryBookmaksExportListener;
 
 	public HistoryBookmarksExportTask(Context context, IHistoryBookmaksExportListener listener) {
-		mContext = context;
-		mListener = listener;
+		this.context = context;
+		iHistoryBookmaksExportListener = listener;
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class HistoryBookmarksExportTask extends AsyncTask<Cursor, Integer, Strin
 
 		publishProgress(0, 0, 0);
 
-		String cardState = IOUtils.checkCardState(mContext);
+		String cardState = IOUtils.checkCardState(context);
 		if (cardState != null) {
 			return cardState;
 		}
@@ -61,12 +61,12 @@ public class HistoryBookmarksExportTask extends AsyncTask<Cursor, Integer, Strin
 
 	@Override
 	protected void onProgressUpdate(Integer... values) {
-		mListener.onExportProgress(values[0], values[1], values[2]);
+		iHistoryBookmaksExportListener.onExportProgress(values[0], values[1], values[2]);
 	}
 
 	@Override
 	protected void onPostExecute(String result) {
-		mListener.onExportDone(result);
+		iHistoryBookmaksExportListener.onExportDone(result);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class HistoryBookmarksExportTask extends AsyncTask<Cursor, Integer, Strin
 	
 	private String writeAsJSON(Cursor... params) {
 		try {
-			String fileName = mContext.getString(R.string.ApplicationName) + "-" + getNowForFileName() + ".json";
+			String fileName = context.getString(R.string.ApplicationName) + "-" + getNowForFileName() + ".json";
 
 			File file = new File(Environment.getExternalStorageDirectory(), fileName);		
 			FileWriter writer = new FileWriter(file);			
