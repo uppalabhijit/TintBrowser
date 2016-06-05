@@ -15,19 +15,6 @@
 
 package org.tint.ui.managers;
 
-import org.tint.R;
-import org.tint.ui.activities.TintBrowserActivity;
-import org.tint.ui.webview.CustomWebView;
-import org.tint.ui.fragments.BaseWebViewFragment;
-import org.tint.ui.fragments.LegacyPhoneStartPageFragment;
-import org.tint.ui.fragments.PhoneWebViewFragment;
-import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
-import org.tint.ui.runnables.HideToolbarsRunnable;
-import org.tint.ui.views.PhoneUrlBar;
-import org.tint.ui.views.PhoneUrlBar.OnPhoneUrlBarEventListener;
-import org.tint.utils.ApplicationUtils;
-import org.tint.utils.Constants;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,12 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-import android.view.ActionMode;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
@@ -49,6 +31,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
+import org.tint.R;
+import org.tint.ui.activities.TintBrowserActivity;
+import org.tint.ui.fragments.BaseWebViewFragment;
+import org.tint.ui.fragments.LegacyPhoneStartPageFragment;
+import org.tint.ui.fragments.PhoneWebViewFragment;
+import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
+import org.tint.ui.runnables.HideToolbarsRunnable;
+import org.tint.ui.views.PhoneUrlBar;
+import org.tint.ui.views.PhoneUrlBar.OnPhoneUrlBarEventListener;
+import org.tint.ui.webview.CustomWebView;
+import org.tint.utils.ApplicationUtils;
+import org.tint.utils.Constants;
 
 public class LegacyPhoneUIManager extends BasePhoneUIManager {
 	

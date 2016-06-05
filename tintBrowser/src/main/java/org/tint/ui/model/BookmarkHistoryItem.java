@@ -22,80 +22,85 @@ import android.graphics.BitmapFactory;
  * Represent an history element.
  */
 public class BookmarkHistoryItem {
-	
-	private long mId;
-	private String mTitle;
-	private String mUrl;
-	private boolean mIsBookmark;
-	private boolean mIsFolder;
-	private long mFolderId;
-	private Bitmap mFavicon;
 
-	/**
-	 * Constructor.
-	 * @param id The element id.
-	 * @param title The title.
-	 * @param url The url.
-	 * @param isBookmark True if this item is also a bookmark.
-	 * @param faviconData The favicon.
-	 */
-	public BookmarkHistoryItem(long id, String title, String url, boolean isBookmark, boolean isFolder, long folderId, byte[] faviconData) {
-		mId = id;
-		mTitle = title;
-		mUrl = url;
-		mIsBookmark = isBookmark;
-		mIsFolder = isFolder;
-		mFolderId = folderId;
-		
-		if (faviconData != null) {
-			mFavicon = BitmapFactory.decodeByteArray(faviconData, 0, faviconData.length);
-		} else {
-			mFavicon = null;
-		}
-	}
+    private long mId;
+    private String mTitle;
+    private String mUrl;
+    private boolean mIsBookmark;
+    private boolean mIsFolder;
+    private long mFolderId;
+    private Bitmap mFavicon;
 
-	/**
-	 * Get the id.
-	 * @return The id.
-	 */
-	public long getId() {
-		return mId;
-	}
+    /**
+     * Constructor.
+     *
+     * @param id          The element id.
+     * @param title       The title.
+     * @param url         The url.
+     * @param isBookmark  True if this item is also a bookmark.
+     * @param faviconData The favicon.
+     */
+    public BookmarkHistoryItem(long id, String title, String url, boolean isBookmark, boolean isFolder, long folderId, byte[] faviconData) {
+        mId = id;
+        mTitle = title;
+        mUrl = url;
+        mIsBookmark = isBookmark;
+        mIsFolder = isFolder;
+        mFolderId = folderId;
 
-	/**
-	 * Get the title.
-	 * @return The title.
-	 */
-	public String getTitle() {
-		return mTitle;
-	}
+        if (faviconData != null) {
+            mFavicon = BitmapFactory.decodeByteArray(faviconData, 0, faviconData.length);
+        } else {
+            mFavicon = null;
+        }
+    }
 
-	/**
-	 * Get the url.
-	 * @return The url.
-	 */
-	public String getUrl() {
-		return mUrl;
-	}
-	
-	public boolean isBookmark() {
-		return mIsBookmark;
-	}
-	
-	public boolean isFolder() {
-		return mIsFolder;
-	}
-	
-	public long getFolderId() {
-		return mFolderId;
-	}
-	
-	/**
-	 * Get the favicon.
-	 * @return The favicon.
-	 */
-	public Bitmap getFavicon() {
-		return mFavicon;
-	}
-	
+    /**
+     * Get the id.
+     *
+     * @return The id.
+     */
+    public long getId() {
+        return mId;
+    }
+
+    /**
+     * Get the title.
+     *
+     * @return The title.
+     */
+    public String getTitle() {
+        return mTitle;
+    }
+
+    /**
+     * Get the url.
+     *
+     * @return The url.
+     */
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public boolean isBookmark() {
+        return mIsBookmark;
+    }
+
+    public boolean isFolder() {
+        return mIsFolder;
+    }
+
+    public long getFolderId() {
+        return mFolderId;
+    }
+
+    /**
+     * Get the favicon.
+     *
+     * @return The favicon.
+     */
+    public Bitmap getFavicon() {
+        return mFavicon;
+    }
+
 }
