@@ -79,8 +79,6 @@ public class TintBrowserActivity extends BaseActivity {
         }
     };
 
-    private IntentFilter packagesFilter;
-
     @Override
     protected int getLayoutId() {
         return UIFactory.getMainLayout(this);
@@ -119,14 +117,7 @@ public class TintBrowserActivity extends BaseActivity {
 
         prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
 
-        packagesFilter = new IntentFilter();
-        packagesFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        packagesFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        packagesFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packagesFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        packagesFilter.addDataScheme("package");
-
-        registerReceiver(packagesReceiver, packagesFilter);
+        registerPackageChangeReceiver();
 
         Intent startIntent = getIntent();
 
@@ -147,7 +138,6 @@ public class TintBrowserActivity extends BaseActivity {
                 startIntent = new Intent(Intent.ACTION_VIEW);
                 startIntent.setData(Uri.parse(Constants.URL_ABOUT_TUTORIAL));
             }
-
         } else {
             int currentVersionCode = ApplicationUtils.getApplicationVersionCode(this);
             int savedVersionCode = prefs.getInt(Constants.TECHNICAL_PREFERENCE_LAST_RUN_VERSION_CODE, -1);
@@ -224,6 +214,16 @@ public class TintBrowserActivity extends BaseActivity {
             editor.remove(Constants.TECHNICAL_PREFERENCE_SAVED_TABS);
             editor.commit();
         }
+    }
+
+    private void registerPackageChangeReceiver() {
+        IntentFilter packagesFilter = new IntentFilter();
+        packagesFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        packagesFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        packagesFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        packagesFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        packagesFilter.addDataScheme("package");
+        registerReceiver(packagesReceiver, packagesFilter);
     }
 
     @Override

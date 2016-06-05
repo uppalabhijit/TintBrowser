@@ -15,49 +15,44 @@
 
 package org.tint.ui.runnables;
 
-import org.tint.ui.managers.LegacyPhoneUIManager;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.tint.ui.managers.LegacyPhoneUIManager;
+
 public class HideToolbarsRunnable implements Runnable {
 
-	private LegacyPhoneUIManager mUIManager;
-	private int mDuration;
-	
-	private boolean mDisabled;
-	
-	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			if ((!mDisabled) &&
-					(mUIManager != null)) {
-				mUIManager.hideToolbars();
-			}
-		}
-	};
-	
-	public HideToolbarsRunnable(LegacyPhoneUIManager uiManager, int duration) {
-		mUIManager = uiManager;
-		mDuration = duration;
-		
-		mDisabled = false;
-	}
-	
-	public void disable() {
-		mDisabled = true;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			Thread.sleep(mDuration);
-			mHandler.sendEmptyMessage(0);
-		} catch (InterruptedException e) {
-			Log.d("HideToolbarsRunnable", e.getMessage());
-			mHandler.sendEmptyMessage(0);
-		}
-		
-	}
+    private LegacyPhoneUIManager uiManager;
+    private int duration;
+    private boolean disabled;
 
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            if ((!disabled) && (uiManager != null)) {
+                uiManager.hideToolbars();
+            }
+        }
+    };
+
+    public HideToolbarsRunnable(LegacyPhoneUIManager uiManager, int duration) {
+        this.uiManager = uiManager;
+        this.duration = duration;
+        disabled = false;
+    }
+
+    public void disable() {
+        disabled = true;
+    }
+
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(duration);
+            mHandler.sendEmptyMessage(0);
+        } catch (InterruptedException e) {
+            Log.d("HideToolbarsRunnable", e.getMessage());
+            mHandler.sendEmptyMessage(0);
+        }
+    }
 }
