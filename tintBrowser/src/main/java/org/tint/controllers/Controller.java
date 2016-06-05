@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tint.addons.AddonManager;
-import org.tint.model.DownloadItem;
+import org.tint.ui.model.DownloadItem;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
 

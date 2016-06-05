@@ -13,11 +13,13 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.model;
+package org.tint.ui.adapters;
 
 import java.util.List;
 
 import org.tint.R;
+import org.tint.ui.model.SearchUrlGroup;
+import org.tint.ui.model.SearchUrlItem;
 
 import android.content.Context;
 import android.view.LayoutInflater;

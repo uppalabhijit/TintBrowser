@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.components;
+package org.tint.ui.webview;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;

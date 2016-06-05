@@ -13,13 +13,11 @@ import android.view.MenuItem;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import org.tint.R;
-import org.tint.controllers.Controller;
-import org.tint.model.BookmarkHistoryItem;
+import org.tint.ui.model.BookmarkHistoryItem;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.activities.EditBookmarkActivity;
 import org.tint.ui.fragments.BookmarksFragment;
 import org.tint.ui.managers.UIManager;
-import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
 /**

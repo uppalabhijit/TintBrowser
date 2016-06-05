@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.preferences;
+package org.tint.ui.activities;
 
 import java.util.List;
 

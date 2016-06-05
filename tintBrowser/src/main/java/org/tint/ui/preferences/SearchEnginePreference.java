@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.tint.R;
-import org.tint.model.SearchUrlAdapter;
-import org.tint.model.SearchUrlGroup;
-import org.tint.model.SearchUrlItem;
+import org.tint.ui.adapters.SearchUrlAdapter;
+import org.tint.ui.model.SearchUrlGroup;
+import org.tint.ui.model.SearchUrlItem;
 import org.tint.tasks.SearchUrlTask;
 import org.tint.tasks.SearchUrlTask.ISearchUrlTaskListener;
 import org.tint.utils.Constants;

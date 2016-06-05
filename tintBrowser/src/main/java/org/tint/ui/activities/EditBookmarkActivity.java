@@ -30,7 +30,7 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import org.tint.R;
-import org.tint.model.FolderItem;
+import org.tint.ui.model.FolderItem;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.utils.Constants;
 

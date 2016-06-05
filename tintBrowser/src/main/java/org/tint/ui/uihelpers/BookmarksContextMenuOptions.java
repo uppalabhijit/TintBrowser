@@ -10,7 +10,7 @@ import android.view.Menu;
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.Controller;
-import org.tint.model.BookmarkHistoryItem;
+import org.tint.ui.model.BookmarkHistoryItem;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.uihelpers.visitors.BookmarksContextMenuVisitor;
 import org.tint.utils.ApplicationUtils;

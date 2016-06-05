@@ -33,7 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tint.R;
-import org.tint.model.SearchUrlGroup;
+import org.tint.ui.model.SearchUrlGroup;
 
 import android.content.Context;
 import android.os.AsyncTask;

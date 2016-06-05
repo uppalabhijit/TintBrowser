@@ -16,7 +16,7 @@
 package org.tint.ui.dialogs;
 
 import org.tint.R;
-import org.tint.model.DownloadItem;
+import org.tint.ui.model.DownloadItem;
 
 import android.app.AlertDialog;
 import android.content.Context;

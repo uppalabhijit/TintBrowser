@@ -16,8 +16,8 @@
 package org.tint.ui.fragments;
 
 import org.tint.R;
-import org.tint.model.BookmarkHistoryItem;
-import org.tint.model.BookmarksAdapter;
+import org.tint.ui.model.BookmarkHistoryItem;
+import org.tint.ui.adapters.BookmarksAdapter;
 import org.tint.providers.BookmarksProvider;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.activities.TintBrowserActivity;

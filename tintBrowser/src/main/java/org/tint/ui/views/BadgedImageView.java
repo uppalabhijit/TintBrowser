@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.components;
+package org.tint.ui.views;
 
 import android.content.Context;
 import android.graphics.Canvas;

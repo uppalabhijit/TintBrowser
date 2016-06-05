@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import org.tint.controllers.Controller;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.preferences.PreferencesActivity;
+import org.tint.ui.activities.PreferencesActivity;
 import org.tint.utils.Constants;
 
 import java.lang.ref.WeakReference;

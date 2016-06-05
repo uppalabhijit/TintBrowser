@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.model;
+package org.tint.ui.model;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -13,9 +13,10 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.model;
+package org.tint.ui.adapters;
 
 import org.tint.R;
+import org.tint.ui.model.BookmarkHistoryItem;
 import org.tint.providers.BookmarksProvider;
 
 import android.content.Context;

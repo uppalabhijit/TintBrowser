@@ -23,13 +23,13 @@ import java.util.UUID;
 
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.model.DownloadItem;
+import org.tint.ui.model.DownloadItem;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.tasks.ThumbnailSaver;
 import org.tint.ui.activities.BookmarksActivity;
 import org.tint.ui.activities.EditBookmarkActivity;
 import org.tint.ui.activities.TintBrowserActivity;
-import org.tint.ui.components.CustomWebView;
+import org.tint.ui.webview.CustomWebView;
 import org.tint.ui.dialogs.GeolocationPermissionsDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.StartPageFragment;

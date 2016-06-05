@@ -17,7 +17,7 @@ package org.tint.addons.executors;
 
 import org.tint.addons.Addon;
 import org.tint.addons.framework.Action;
-import org.tint.ui.components.CustomWebView;
+import org.tint.ui.webview.CustomWebView;
 import org.tint.ui.managers.UIManager;
 
 import android.content.Context;

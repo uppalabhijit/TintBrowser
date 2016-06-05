@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.model.DownloadItem;
+import org.tint.ui.model.DownloadItem;
 import org.tint.utils.NotificationUtils;
 
 /**

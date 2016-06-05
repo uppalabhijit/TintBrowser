@@ -16,8 +16,8 @@
 package org.tint.ui.views;
 
 import org.tint.R;
-import org.tint.model.UrlSuggestionCursorAdapter;
-import org.tint.model.UrlSuggestionCursorAdapter.QueryBuilderListener;
+import org.tint.ui.adapters.UrlSuggestionCursorAdapter;
+import org.tint.ui.adapters.UrlSuggestionCursorAdapter.QueryBuilderListener;
 import org.tint.providers.BookmarksProvider;
 import org.tint.providers.BookmarksWrapper;
 

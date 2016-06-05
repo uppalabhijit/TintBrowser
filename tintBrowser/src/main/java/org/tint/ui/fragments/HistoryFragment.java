@@ -40,8 +40,8 @@ import android.widget.ExpandableListView.OnGroupExpandListener;
 
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.model.BookmarkHistoryItem;
-import org.tint.model.HistoryAdapter;
+import org.tint.ui.model.BookmarkHistoryItem;
+import org.tint.ui.adapters.HistoryAdapter;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.uihelpers.HistoryContextMenuOptions;

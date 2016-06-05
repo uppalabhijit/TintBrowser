@@ -21,8 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.tint.model.BookmarkHistoryItem;
-import org.tint.model.FolderItem;
+import org.tint.ui.model.BookmarkHistoryItem;
+import org.tint.ui.model.FolderItem;
 import org.tint.utils.Constants;
 
 import android.content.ContentResolver;

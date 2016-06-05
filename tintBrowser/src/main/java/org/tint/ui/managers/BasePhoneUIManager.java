@@ -25,7 +25,7 @@ import java.util.UUID;
 import org.tint.R;
 import org.tint.controllers.Controller;
 import org.tint.ui.activities.TintBrowserActivity;
-import org.tint.ui.components.CustomWebView;
+import org.tint.ui.webview.CustomWebView;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.PhoneWebViewFragment;
 import org.tint.ui.views.PhoneUrlBar;

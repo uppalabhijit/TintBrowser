@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.components;
+package org.tint.ui.webview;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +26,7 @@ import org.apache.http.message.BasicHeader;
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.Controller;
-import org.tint.model.DownloadItem;
+import org.tint.ui.model.DownloadItem;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;

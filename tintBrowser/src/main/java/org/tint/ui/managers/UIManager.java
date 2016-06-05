@@ -18,7 +18,7 @@ package org.tint.ui.managers;
 import java.util.UUID;
 
 import org.tint.ui.activities.TintBrowserActivity;
-import org.tint.ui.components.CustomWebView;
+import org.tint.ui.webview.CustomWebView;
 import org.tint.ui.fragments.BaseWebViewFragment;
 
 import android.content.Intent;

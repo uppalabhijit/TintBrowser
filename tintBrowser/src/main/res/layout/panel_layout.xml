@@ -154,7 +154,7 @@
             android:padding="0dip"
             android:scaleType="fitXY" >
 
-            <org.tint.ui.components.BadgedImageView
+            <org.tint.ui.views.BadgedImageView
                 android:id="@+id/FaviconView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

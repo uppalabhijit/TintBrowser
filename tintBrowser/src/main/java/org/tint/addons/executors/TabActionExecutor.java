@@ -19,7 +19,7 @@ import java.util.UUID;
 
 import org.tint.addons.framework.Action;
 import org.tint.addons.framework.TabAction;
-import org.tint.ui.components.CustomWebView;
+import org.tint.ui.webview.CustomWebView;
 
 import android.text.TextUtils;
 

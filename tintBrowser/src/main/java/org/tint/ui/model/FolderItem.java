@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.model;
+package org.tint.ui.model;
 
 public class FolderItem {
 	

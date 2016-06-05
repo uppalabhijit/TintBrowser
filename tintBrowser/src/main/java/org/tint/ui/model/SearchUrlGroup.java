@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.model;
+package org.tint.ui.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
