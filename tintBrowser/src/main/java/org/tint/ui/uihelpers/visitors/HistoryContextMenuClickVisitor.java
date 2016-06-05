@@ -33,32 +33,30 @@ public class HistoryContextMenuClickVisitor implements HistoryContextMenuVisitor
     }
 
     @Override
-    public boolean visitOpenInTab() {
-        Intent result = new Intent();
-        result.putExtra(Constants.EXTRA_NEW_TAB, true);
-        result.putExtra(Constants.EXTRA_URL, bookmarkHistoryItem.getUrl());
-
-        activityWeakReference.get().setResult(Activity.RESULT_OK, result);
-        activityWeakReference.get().finish();
-
+    public final boolean visitOpenInTab() {
+        if (menuItem != null) {
+            Intent result = new Intent();
+            result.putExtra(Constants.EXTRA_NEW_TAB, true);
+            result.putExtra(Constants.EXTRA_URL, bookmarkHistoryItem.getUrl());
+            activityWeakReference.get().setResult(Activity.RESULT_OK, result);
+            activityWeakReference.get().finish();
+        }
         return true;
     }
 
     @Override
-    public boolean visitCopyUrl() {
+    public final boolean visitCopyUrl() {
         if (bookmarkHistoryItem != null) {
             ApplicationUtils.copyTextToClipboard(activityWeakReference.get(), bookmarkHistoryItem.getUrl(), activityWeakReference.get().getResources().getString(R.string.UrlCopyToastMessage));
         }
-
         return true;
     }
 
     @Override
-    public boolean visitShareUrl() {
+    public final boolean visitShareUrl() {
         if (bookmarkHistoryItem != null) {
             ApplicationUtils.sharePage(activityWeakReference.get(), null, bookmarkHistoryItem.getUrl());
         }
-
         return true;
     }
 
@@ -70,7 +68,7 @@ public class HistoryContextMenuClickVisitor implements HistoryContextMenuVisitor
     }
 
     @Override
-    public boolean visitDefault() {
+    public final boolean visitDefault() {
         if (Controller.getInstance().getAddonManager().onContributedHistoryContextMenuItemSelected(
                 activityWeakReference.get(),
                 menuItem.getItemId(),

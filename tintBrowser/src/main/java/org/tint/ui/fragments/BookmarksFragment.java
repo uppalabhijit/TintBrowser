@@ -15,6 +15,7 @@
 
 package org.tint.ui.fragments;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,8 +52,8 @@ import org.tint.providers.BookmarksProvider;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.uihelpers.visitors.BookmarksContextMenuClickVisitor;
 import org.tint.ui.uihelpers.BookmarksContextMenuOptions;
+import org.tint.ui.uihelpers.visitors.BookmarksContextMenuClickVisitor;
 import org.tint.utils.Constants;
 
 public class BookmarksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -241,7 +242,8 @@ public class BookmarksFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public boolean onContextItemSelected(MenuItem menuItem) {
         final AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) menuItem.getMenuInfo();
-        boolean status = BookmarksContextMenuOptions.getById(menuItem.getItemId()).accept(new BookmarksContextMenuClickVisitor(this, uiManager, menuItem, adapterContextMenuInfo));
+        boolean status = BookmarksContextMenuOptions.getById(menuItem.getItemId()).accept(new BookmarksContextMenuClickVisitor(new
+                WeakReference<Activity>(getActivity()), this, uiManager, menuItem, adapterContextMenuInfo));
         if (!status) {
             return super.onContextItemSelected(menuItem);
         }

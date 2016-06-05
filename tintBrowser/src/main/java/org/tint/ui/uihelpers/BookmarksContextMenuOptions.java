@@ -63,7 +63,7 @@ public enum BookmarksContextMenuOptions {
     }, DELETE_BOOKMARK(Menu.FIRST + 4) {
         @Override
         public boolean accept(BookmarksContextMenuVisitor bookmarksContextMenuVisitor) {
-            return bookmarksContextMenuVisitor.visitDeleteBookmark();
+            return bookmarksContextMenuVisitor.visitDeleteItem();
         }
 
         @Override

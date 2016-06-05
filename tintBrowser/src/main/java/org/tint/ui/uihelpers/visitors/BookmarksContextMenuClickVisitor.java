@@ -26,7 +26,7 @@ import org.tint.utils.Constants;
  * User: Abhijit
  * Date: 2016-06-04
  */
-public class BookmarksContextMenuClickVisitor implements BookmarksContextMenuVisitor {
+public class BookmarksContextMenuClickVisitor extends HistoryContextMenuClickVisitor implements BookmarksContextMenuVisitor {
     private final WeakReference<Activity> weakReference;
     private final BookmarkHistoryItem bookmarkHistoryItem;
     private final BookmarksFragment bookmarksFragment;
@@ -35,25 +35,15 @@ public class BookmarksContextMenuClickVisitor implements BookmarksContextMenuVis
     private final AdapterContextMenuInfo adapterContextMenuInfo;
     private ProgressDialog progressDialog;
 
-    public BookmarksContextMenuClickVisitor(BookmarksFragment bookmarksFragment, UIManager uiManager, MenuItem menuItem, AdapterContextMenuInfo adapterContextMenuInfo) {
-        this.weakReference = new WeakReference<Activity>(bookmarksFragment.getActivity());
+    public BookmarksContextMenuClickVisitor(WeakReference<Activity> weakReference, BookmarksFragment bookmarksFragment, UIManager
+            uiManager, MenuItem menuItem, AdapterContextMenuInfo adapterContextMenuInfo) {
+        super(weakReference, uiManager);
+        this.weakReference = weakReference;
         this.bookmarksFragment = bookmarksFragment;
         this.bookmarkHistoryItem = BookmarksWrapper.getBookmarkById(weakReference.get().getContentResolver(), adapterContextMenuInfo.id);
         this.uiManager = uiManager;
         this.menuItem = menuItem;
         this.adapterContextMenuInfo = adapterContextMenuInfo;
-    }
-
-    @Override
-    public boolean visitOpenInTab() {
-        if (menuItem != null) {
-            Intent result = new Intent();
-            result.putExtra(Constants.EXTRA_NEW_TAB, true);
-            result.putExtra(Constants.EXTRA_URL, bookmarkHistoryItem.getUrl());
-            weakReference.get().setResult(Activity.RESULT_OK, result);
-            weakReference.get().finish();
-        }
-        return true;
     }
 
     @Override
@@ -70,23 +60,7 @@ public class BookmarksContextMenuClickVisitor implements BookmarksContextMenuVis
     }
 
     @Override
-    public boolean visitCopyUrl() {
-        if (bookmarkHistoryItem != null) {
-            ApplicationUtils.copyTextToClipboard(weakReference.get(), bookmarkHistoryItem.getUrl(), weakReference.get().getResources().getString(R.string.UrlCopyToastMessage));
-        }
-        return true;
-    }
-
-    @Override
-    public boolean visitShareUrl() {
-        if (bookmarkHistoryItem != null) {
-            ApplicationUtils.sharePage(weakReference.get(), null, bookmarkHistoryItem.getUrl());
-        }
-        return true;
-    }
-
-    @Override
-    public boolean visitDeleteBookmark() {
+    public boolean visitDeleteItem() {
         BookmarksWrapper.deleteBookmark(weakReference.get().getContentResolver(), adapterContextMenuInfo.id);
         return true;
     }
@@ -107,19 +81,6 @@ public class BookmarksContextMenuClickVisitor implements BookmarksContextMenuVis
         builder.setNegativeButton(R.string.No, null);
         builder.create().show();
         return true;
-    }
-
-    @Override
-    public boolean visitDefault() {
-        if (Controller.getInstance().getAddonManager().onContributedBookmarkContextMenuItemSelected(
-                weakReference.get(),
-                menuItem.getItemId(),
-                bookmarkHistoryItem.getTitle(),
-                bookmarkHistoryItem.getUrl(),
-                uiManager.getCurrentWebView())) {
-            return true;
-        }
-        return false;
     }
 
     private void doDeleteFolder(long folderId) {
