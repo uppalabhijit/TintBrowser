@@ -1,4 +1,4 @@
-package org.tint.ui.fragments;
+package org.tint.ui.uihelpers;
 
 import android.app.FragmentBreadCrumbs;
 import android.database.Cursor;
@@ -11,6 +11,7 @@ import android.widget.*;
 
 import org.tint.R;
 import org.tint.ui.adapters.HistoryAdapter;
+import org.tint.ui.fragments.HistoryFragment;
 import org.tint.ui.model.BookmarkHistoryItem;
 
 /**
@@ -29,7 +30,7 @@ public class DoublePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected void initViews() {
+    public void initViews() {
         View mContainer = historyFragment.mContainer;
         childHeader = (FragmentBreadCrumbs) mContainer.findViewById(R.id.history_child_breadcrumbs);
         childHeader.setMaxVisible(1);
@@ -68,12 +69,12 @@ public class DoublePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected void registerForContextMenu() {
+    public void registerForContextMenu() {
         historyFragment.registerForContextMenu(childList);
     }
 
     @Override
-    protected BookmarkHistoryItem getItemForContextMenu(ContextMenu.ContextMenuInfo contextMenuInfo) {
+    public BookmarkHistoryItem getItemForContextMenu(ContextMenu.ContextMenuInfo contextMenuInfo) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) contextMenuInfo;
         int group = childAdapter.getSelectedGroup();
         int child = info.position;
@@ -82,7 +83,7 @@ public class DoublePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected BookmarkHistoryItem getContextMenuSelectedItem(MenuItem menuItem) {
+    public BookmarkHistoryItem getContextMenuSelectedItem(MenuItem menuItem) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
 
         int group = childAdapter.getSelectedGroup();
@@ -189,7 +190,7 @@ public class DoublePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected void onLoadFinished(Cursor data) {
+    public void onLoadFinished(Cursor data) {
         // Select previously selected group.
         selectGroup(mAdapter.getGroupView(historyFragment.mSelectedGroup, false, null, null), historyFragment.mSelectedGroup);
     }

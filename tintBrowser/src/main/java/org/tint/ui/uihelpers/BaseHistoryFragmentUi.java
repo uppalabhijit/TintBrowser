@@ -1,4 +1,4 @@
-package org.tint.ui.fragments;
+package org.tint.ui.uihelpers;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 import org.tint.R;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.adapters.HistoryAdapter;
+import org.tint.ui.fragments.HistoryFragment;
 import org.tint.ui.model.BookmarkHistoryItem;
 import org.tint.utils.Constants;
 
@@ -38,9 +39,9 @@ public abstract class BaseHistoryFragmentUi {
         }
     }
 
-    protected abstract void initViews();
+    public abstract void initViews();
 
-    protected final void initListViews() {
+    public final void initListViews() {
         CompoundButton.OnCheckedChangeListener mBookmarkStarChangeListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -71,13 +72,13 @@ public abstract class BaseHistoryFragmentUi {
 
     protected abstract void attachAdapterToListViews(HistoryAdapter historyAdapter);
 
-    protected abstract void registerForContextMenu();
+    public abstract void registerForContextMenu();
 
-    protected abstract BookmarkHistoryItem getItemForContextMenu(ContextMenu.ContextMenuInfo contextMenuInfo);
+    public abstract BookmarkHistoryItem getItemForContextMenu(ContextMenu.ContextMenuInfo contextMenuInfo);
 
-    protected abstract BookmarkHistoryItem getContextMenuSelectedItem(MenuItem menuItem);
+    public abstract BookmarkHistoryItem getContextMenuSelectedItem(MenuItem menuItem);
 
-    protected void setListShown(boolean shown) {
+    public void setListShown(boolean shown) {
         if (mIsListShown == shown) {
             return;
         }
@@ -92,9 +93,9 @@ public abstract class BaseHistoryFragmentUi {
 
     protected abstract void showItemsList();
 
-    protected abstract void onLoadFinished(Cursor data);
+    public abstract void onLoadFinished(Cursor data);
 
-    protected final void changeCursor(Cursor data) {
+    public final void changeCursor(Cursor data) {
         mAdapter.changeCursor(data);
     }
 }

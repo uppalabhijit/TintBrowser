@@ -1,4 +1,4 @@
-package org.tint.ui.fragments;
+package org.tint.ui.uihelpers;
 
 import android.database.Cursor;
 import android.view.ContextMenu;
@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import org.tint.R;
 import org.tint.ui.adapters.HistoryAdapter;
+import org.tint.ui.fragments.HistoryFragment;
 import org.tint.ui.model.BookmarkHistoryItem;
 
 /**
@@ -23,7 +24,7 @@ public class SinglePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected void initViews() {
+    public void initViews() {
         View mContainer = historyFragment.mContainer;
         listView = (ExpandableListView) mContainer.findViewById(R.id.HistoryExpandableList);
         listView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
@@ -54,12 +55,12 @@ public class SinglePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected void registerForContextMenu() {
+    public void registerForContextMenu() {
         historyFragment.registerForContextMenu(listView);
     }
 
     @Override
-    protected BookmarkHistoryItem getItemForContextMenu(ContextMenu.ContextMenuInfo contextMenuInfo) {
+    public BookmarkHistoryItem getItemForContextMenu(ContextMenu.ContextMenuInfo contextMenuInfo) {
         BookmarkHistoryItem selectedItem = null;
         ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) contextMenuInfo;
 
@@ -74,7 +75,7 @@ public class SinglePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected BookmarkHistoryItem getContextMenuSelectedItem(MenuItem menuItem) {
+    public BookmarkHistoryItem getContextMenuSelectedItem(MenuItem menuItem) {
         BookmarkHistoryItem selectedItem = null;
         ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuItem.getMenuInfo();
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
@@ -93,7 +94,7 @@ public class SinglePaneHistoryFragmentUi extends BaseHistoryFragmentUi {
     }
 
     @Override
-    protected void onLoadFinished(Cursor data) {
+    public void onLoadFinished(Cursor data) {
         if (!historyFragment.historyContextMenuClickVisitor.isAfterDelete()) {
             if (mAdapter.getGroupCount() > 0) {
                 for (int i = 0; i < historyFragment.mExpandedGroups.length; i++) {
