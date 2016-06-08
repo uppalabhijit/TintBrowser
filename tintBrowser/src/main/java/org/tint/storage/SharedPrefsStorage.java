@@ -2,7 +2,6 @@ package org.tint.storage;
 
 import java.util.Set;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
@@ -13,7 +12,7 @@ import org.tint.controllers.Controller;
  * User: Abhijit
  * Date: 2016-06-07
  */
-public final class SharedPrefsStorage {
+final class SharedPrefsStorage {
     private final SharedPreferences sharedPreferences;
 
     public SharedPrefsStorage() {

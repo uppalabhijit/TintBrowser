@@ -1,7 +1,5 @@
 package org.tint.storage;
 
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-
 import org.tint.providers.BookmarksWrapper;
 import org.tint.utils.Callback;
 import org.tint.utils.Constants;
@@ -11,19 +9,10 @@ import org.tint.utils.Predicate;
  * User: Abhijit
  * Date: 2016-06-07
  */
-public class BookmarksPrefsStorage {
-    private final SharedPrefsStorage sharedPrefsStorage;
+public class BookmarksPrefsStorage extends BasePrefsStorage {
 
     public BookmarksPrefsStorage() {
-        this.sharedPrefsStorage = new SharedPrefsStorage();
-    }
-
-    public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener mPreferenceChangeListener) {
-        sharedPrefsStorage.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
-    }
-
-    public void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener mPreferenceChangeListener) {
-        sharedPrefsStorage.unregisterOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+        super();
     }
 
     public void updateBookmarkSortMode(int mode) {

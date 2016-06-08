@@ -17,49 +17,46 @@ package org.tint.tasks;
 
 import java.util.Date;
 
-import org.tint.providers.BookmarksWrapper;
-import org.tint.utils.Constants;
-
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
+import org.tint.providers.BookmarksWrapper;
+import org.tint.storage.CommonPrefsStorage;
+
 public class UpdateHistoryTask extends AsyncTask<String, Void, Void> {
 
-	private static final long DAY_IN_MILLISECONDS = 24 * 3600 * 1000;
-	
-	private Activity mActivity;
-	private ContentResolver mContentResolver;
-	
-	public UpdateHistoryTask(Activity activity) {
-		mActivity = activity;
-		mContentResolver = mActivity.getContentResolver();
-	}
-	
-	@Override
-	protected Void doInBackground(String... params) {
-		String title = params[0];
-		String url = params[1];
-		String originalUrl = params[2];
-		
-		BookmarksWrapper.updateHistory(mContentResolver, title, url, originalUrl);
-		
-		// Truncate history at most once a day.
-		long lastTruncation = PreferenceManager.getDefaultSharedPreferences(mActivity).getLong(Constants.TECHNICAL_PREFERENCE_LAST_HISTORY_TRUNCATION, -1);
-		long now = new Date().getTime();
-		
-		if ((lastTruncation < 0) ||
-				(now - lastTruncation > DAY_IN_MILLISECONDS)) {
-			BookmarksWrapper.truncateHistory(mContentResolver, PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREFERENCE_HISTORY_SIZE, "30"));
-			
-			Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mActivity).edit();
-			prefEditor.putLong(Constants.TECHNICAL_PREFERENCE_LAST_HISTORY_TRUNCATION, now);
-			prefEditor.commit();
-		}
-		
-		return null;
-	}
+    private static final long DAY_IN_MILLISECONDS = 24 * 3600 * 1000;
+
+    private Activity mActivity;
+    private ContentResolver mContentResolver;
+
+    public UpdateHistoryTask(Activity activity) {
+        mActivity = activity;
+        mContentResolver = mActivity.getContentResolver();
+    }
+
+    @Override
+    protected Void doInBackground(String... params) {
+        String title = params[0];
+        String url = params[1];
+        String originalUrl = params[2];
+
+        BookmarksWrapper.updateHistory(mContentResolver, title, url, originalUrl);
+
+        // Truncate history at most once a day.
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        CommonPrefsStorage commonPrefsStorage = new CommonPrefsStorage();
+        long lastTruncation = commonPrefsStorage.getLastHistoryTruncationTime();
+        long now = new Date().getTime();
+
+        if ((lastTruncation < 0) || (now - lastTruncation > DAY_IN_MILLISECONDS)) {
+            BookmarksWrapper.truncateHistory(mContentResolver, commonPrefsStorage.getHistorySize());
+            commonPrefsStorage.setLastHistoryTruncationTime(now);
+        }
+        return null;
+    }
 
 }
