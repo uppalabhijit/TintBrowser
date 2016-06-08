@@ -69,29 +69,44 @@ public class BookmarksWrapper {
 
     public static CursorLoader getCursorLoaderForBookmarks(Context context, long parentFolderId) {
         int sortMode = new BookmarksPrefsStorage().getBookmarkSortMode();
-
         String whereClause = BookmarksProvider.Columns.PARENT_FOLDER_ID + " = " + parentFolderId + " AND (" + BookmarksProvider.Columns.BOOKMARK + " = 1 OR " + BookmarksProvider.Columns.IS_FOLDER + " = 1)";
+        String orderClause = BookmarkSortMode.getByInt(sortMode).getOrderClause();
+        return new CursorLoader(context, BookmarksProvider.BOOKMARKS_URI, HISTORY_BOOKMARKS_PROJECTION, whereClause, null, orderClause);
+    }
 
-        String orderClause;
-        switch (sortMode) {
-            case 0:
-                orderClause = BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.VISITS + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE";
-                break;
+    public enum BookmarkSortMode {
+        MOST_USED {
+            @Override
+            protected String getOrderClause() {
+                return BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.VISITS + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE";
+            }
+        }, APHABETICALLY {
+            @Override
+            protected String getOrderClause() {
+                return BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE, " + BookmarksProvider.Columns.VISITS + " DESC";
+            }
+        }, MOST_RECENTLY_VISITED {
+            @Override
+            protected String getOrderClause() {
+                return BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.VISITED_DATE + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE";
+            }
+        }, DEFAULT {
+            @Override
+            protected String getOrderClause() {
+                return BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.VISITS + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE";
+            }
+        };
 
-            case 1:
-                orderClause = BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE, " + BookmarksProvider.Columns.VISITS + " DESC";
-                break;
-
-            case 2:
-                orderClause = BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.VISITED_DATE + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE";
-                break;
-
-            default:
-                orderClause = BookmarksProvider.Columns.IS_FOLDER + " DESC, " + BookmarksProvider.Columns.VISITS + " DESC, " + BookmarksProvider.Columns.TITLE + " COLLATE NOCASE";
-                break;
+        private static BookmarkSortMode getByInt(int sortMode) {
+            for (BookmarkSortMode bookmarkSortMode : values()) {
+                if (bookmarkSortMode.ordinal() == sortMode) {
+                    return bookmarkSortMode;
+                }
+            }
+            return DEFAULT;
         }
 
-        return new CursorLoader(context, BookmarksProvider.BOOKMARKS_URI, HISTORY_BOOKMARKS_PROJECTION, whereClause, null, orderClause);
+        protected abstract String getOrderClause();
     }
 
     public static CursorLoader getCursorLoaderForHistory(Context context) {

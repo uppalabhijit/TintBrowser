@@ -2,6 +2,7 @@ package org.tint.storage;
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
+import org.tint.providers.BookmarksWrapper;
 import org.tint.utils.Callback;
 import org.tint.utils.Constants;
 import org.tint.utils.Predicate;
@@ -30,7 +31,7 @@ public class BookmarksPrefsStorage {
     }
 
     public int getBookmarkSortMode() {
-        return sharedPrefsStorage.getInt(Constants.PREFERENCE_BOOKMARKS_SORT_MODE, 0);
+        return sharedPrefsStorage.getInt(Constants.PREFERENCE_BOOKMARKS_SORT_MODE, BookmarksWrapper.BookmarkSortMode.MOST_USED.ordinal());
     }
 
     public static class BookmarksPreferenceChangeListener extends BaseSharedPreferencesChangeListener {
