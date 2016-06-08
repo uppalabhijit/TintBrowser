@@ -32,9 +32,9 @@ import org.tint.controllers.Controller;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.BookmarkHistoryItem;
-import org.tint.ui.uihelpers.BaseHistoryFragmentUi;
-import org.tint.ui.uihelpers.HistoryContextMenuOptions;
-import org.tint.ui.uihelpers.visitors.HistoryContextMenuClickVisitor;
+import org.tint.ui.uihelpers.history.BaseHistoryFragmentUi;
+import org.tint.ui.uihelpers.history.HistoryContextMenuOptions;
+import org.tint.ui.uihelpers.visitors.history.HistoryContextMenuClickVisitor;
 
 public class HistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 

@@ -31,8 +31,8 @@ import org.tint.ui.fragments.BookmarksFragment;
 import org.tint.ui.fragments.HistoryFragment;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.tabs.GenericTabListener;
-import org.tint.ui.uihelpers.BookmarkMenuOptions;
-import org.tint.ui.uihelpers.visitors.BookmarksMenuClickVisitor;
+import org.tint.ui.uihelpers.bookmarks.BookmarkMenuOptions;
+import org.tint.ui.uihelpers.visitors.bookmarks.BookmarksMenuClickVisitor;
 
 public class BookmarksActivity extends BaseActivity {
 

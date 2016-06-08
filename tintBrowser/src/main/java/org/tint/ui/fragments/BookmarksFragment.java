@@ -29,11 +29,8 @@ import android.app.FragmentBreadCrumbs;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
@@ -46,14 +43,16 @@ import android.widget.ProgressBar;
 
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.ui.model.BookmarkHistoryItem;
-import org.tint.ui.adapters.BookmarksAdapter;
 import org.tint.providers.BookmarksProvider;
 import org.tint.providers.BookmarksWrapper;
+import org.tint.storage.BookmarksPrefsStorage;
+import org.tint.ui.adapters.BookmarksAdapter;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.uihelpers.BookmarksContextMenuOptions;
-import org.tint.ui.uihelpers.visitors.BookmarksContextMenuClickVisitor;
+import org.tint.ui.model.BookmarkHistoryItem;
+import org.tint.ui.uihelpers.bookmarks.BookmarksContextMenuOptions;
+import org.tint.ui.uihelpers.visitors.bookmarks.BookmarksContextMenuClickVisitor;
+import org.tint.utils.Callback;
 import org.tint.utils.Constants;
 
 public class BookmarksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -62,11 +61,9 @@ public class BookmarksFragment extends Fragment implements LoaderManager.LoaderC
 
     private static final String STACK_SEPARATOR = "//;//";
 
-    private static final int CONTEXT_MENU_DELETE_FOLDER = Menu.FIRST + 5;
-
     private View mContainer = null;
 
-    private UIManager uiManager;
+    private final UIManager uiManager;
 
     private GridView mBookmarksGrid;
 
@@ -82,35 +79,33 @@ public class BookmarksFragment extends Fragment implements LoaderManager.LoaderC
 
     private boolean mIsTablet;
     private boolean mIsListShown = true;
+    private final BookmarksPrefsStorage bookmarksPrefsStorage;
 
-
-    private OnSharedPreferenceChangeListener mPreferenceChangeListener;
+    private final BookmarksPrefsStorage.BookmarksPreferenceChangeListener mPreferenceChangeListener = new BookmarksPrefsStorage
+            .BookmarksPreferenceChangeListener(
+            new Callback() {
+                @Override
+                public void execute() {
+                    getLoaderManager().restartLoader(0, null, BookmarksFragment.this);
+                }
+            }
+    );
 
     public BookmarksFragment() {
-        uiManager = Controller.getInstance().getUIManager();
+        this.uiManager = Controller.getInstance().getUIManager();
+        this.bookmarksPrefsStorage = new BookmarksPrefsStorage();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mPreferenceChangeListener = new OnSharedPreferenceChangeListener() {
-
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (Constants.PREFERENCE_BOOKMARKS_SORT_MODE.equals(key)) {
-                    getLoaderManager().restartLoader(0, null, BookmarksFragment.this);
-                }
-            }
-        };
-
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+        bookmarksPrefsStorage.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+        bookmarksPrefsStorage.unregisterOnSharedPreferenceChangeListener(mPreferenceChangeListener);
     }
 
     @Override
@@ -131,8 +126,6 @@ public class BookmarksFragment extends Fragment implements LoaderManager.LoaderC
                 mBreadCrumbGroup.setTranslationY(-mBreadCrumbGroup.getHeight());
             }
 
-            mNavigationList = new ArrayList<NavigationItem>();
-
             initNavigationList(savedInstanceState);
 
             setListShown(false);
@@ -144,6 +137,7 @@ public class BookmarksFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     private void initNavigationList(Bundle savedInstanceState) {
+        mNavigationList = new ArrayList<NavigationItem>();
         if ((savedInstanceState != null) && (savedInstanceState.containsKey(EXTRA_FOLDER_STACK))) {
             String folderStack = savedInstanceState.getString(EXTRA_FOLDER_STACK);
             String[] stack = folderStack.split(STACK_SEPARATOR);
@@ -373,37 +367,31 @@ public class BookmarksFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     private class NavigationItem {
-        private long mId;
-        private String mTitle;
+        private final long mId;
+        private final String mTitle;
 
         public NavigationItem(long id, String title) {
-            mId = id;
-            mTitle = title;
+            this.mId = id;
+            this.mTitle = title;
         }
 
         public NavigationItem(String builder) {
-            if ((builder.startsWith("{")) &&
-                    (builder.endsWith("}"))) {
-
+            long mId = -1L;
+            String mTitle = "";
+            if ((builder.startsWith("{")) && (builder.endsWith("}"))) {
                 try {
                     builder = builder.substring(1, builder.length() - 1);
                     String[] parts = builder.split(",");
-
                     mId = Long.parseLong(parts[0]);
-                    if (mId == -1) {
-                        mTitle = null;
-                    } else {
+                    if (mId != -1) {
                         mTitle = parts[1];
                     }
                 } catch (Exception e) {
-                    mId = -1;
-                    mTitle = null;
+                    e.printStackTrace();
                 }
-
-            } else {
-                mId = -1;
-                mTitle = null;
             }
+            this.mId = mId;
+            this.mTitle = mTitle;
         }
 
         public long getId() {

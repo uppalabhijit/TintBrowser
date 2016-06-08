@@ -18,76 +18,86 @@ package org.tint.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+
 import org.tint.addons.AddonManager;
-import org.tint.ui.model.DownloadItem;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
+import org.tint.ui.model.DownloadItem;
 
-public class Controller { 
-	
-	/**
-	 * Holder for singleton implementation.
-	 */
-	private static final class ControllerHolder {
-		private static final Controller INSTANCE = new Controller();
-		/**
-		 * Private Constructor.
-		 */
-		private ControllerHolder() { }
-	}
-	
-	/**
-	 * Get the unique instance of the Controller.
-	 * @return The instance of the Controller
-	 */
-	public static Controller getInstance() {
-		return ControllerHolder.INSTANCE;
-	}
-	
-	/**
-	 * Private Constructor.
-	 */
-	private Controller() {
-		mDownloads = new ArrayList<DownloadItem>();
-	}
-	
-	private UIManager mUIManager;
-	private TintBrowserActivity mMainActivity;
-	
-	private List<DownloadItem> mDownloads;
-	
-	private AddonManager mAddonManager;
-	
-	public void init(UIManager uiManager, TintBrowserActivity activity) {
-		mUIManager = uiManager;
-		mMainActivity = activity;
-		mAddonManager = new AddonManager(mMainActivity, mUIManager);
-	}
-	
-	public UIManager getUIManager() {
-		return mUIManager;
-	}
-	
-	public TintBrowserActivity getMainActivity() {
-		return mMainActivity;
-	}
+public class Controller {
 
-	public List<DownloadItem> getDownloadsList() {
-		return mDownloads;
-	}
-	
-	public DownloadItem getDownloadItemById(long id) {
-		for (DownloadItem item : mDownloads) {
-			if (item.getId() == id) {
-				return item;
-			}
-		}
-		
-		return null;
-	}
-	
-	public AddonManager getAddonManager() {
-		return mAddonManager;
-	}
-	
+    /**
+     * Holder for singleton implementation.
+     */
+    private static final class ControllerHolder {
+        private static final Controller INSTANCE = new Controller();
+
+        /**
+         * Private Constructor.
+         */
+        private ControllerHolder() {
+        }
+    }
+
+    /**
+     * Get the unique instance of the Controller.
+     *
+     * @return The instance of the Controller
+     */
+    public static Controller getInstance() {
+        return ControllerHolder.INSTANCE;
+    }
+
+    /**
+     * Private Constructor.
+     */
+    private Controller() {
+        mDownloads = new ArrayList<DownloadItem>();
+    }
+
+    private UIManager mUIManager;
+    private TintBrowserActivity mMainActivity;
+    private Context context;
+    private List<DownloadItem> mDownloads;
+
+    private AddonManager mAddonManager;
+
+    public void init(UIManager uiManager, TintBrowserActivity activity) {
+        mUIManager = uiManager;
+        mMainActivity = activity;
+        this.context = mMainActivity.getApplicationContext();
+        mAddonManager = new AddonManager(context, mUIManager);
+    }
+
+    public UIManager getUIManager() {
+        return mUIManager;
+    }
+
+    public TintBrowserActivity getMainActivity() {
+        return mMainActivity;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public List<DownloadItem> getDownloadsList() {
+        return mDownloads;
+    }
+
+    public DownloadItem getDownloadItemById(long id) {
+        for (DownloadItem item : mDownloads) {
+            if (item.getId() == id) {
+                return item;
+            }
+        }
+
+        return null;
+    }
+
+    public AddonManager getAddonManager() {
+        return mAddonManager;
+    }
+
 }
