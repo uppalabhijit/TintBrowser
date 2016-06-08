@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers;
+package org.tint.ui.uihelpers.history;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.Controller;
 import org.tint.ui.model.BookmarkHistoryItem;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.uihelpers.visitors.HistoryContextMenuVisitor;
+import org.tint.ui.uihelpers.visitors.history.HistoryContextMenuVisitor;
 import org.tint.utils.ApplicationUtils;
 
 /**

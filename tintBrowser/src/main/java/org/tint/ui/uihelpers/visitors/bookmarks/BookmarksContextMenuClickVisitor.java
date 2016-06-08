@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers.visitors;
+package org.tint.ui.uihelpers.visitors.bookmarks;
 
 import java.lang.ref.WeakReference;
 
@@ -18,6 +18,7 @@ import org.tint.providers.BookmarksWrapper;
 import org.tint.ui.activities.EditBookmarkActivity;
 import org.tint.ui.fragments.BookmarksFragment;
 import org.tint.ui.managers.UIManager;
+import org.tint.ui.uihelpers.visitors.history.HistoryContextMenuClickVisitor;
 import org.tint.utils.Constants;
 
 /**

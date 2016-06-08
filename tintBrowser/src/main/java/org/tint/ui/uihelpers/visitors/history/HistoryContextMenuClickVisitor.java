@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers.visitors;
+package org.tint.ui.uihelpers.visitors.history;
 
 import java.lang.ref.WeakReference;
 

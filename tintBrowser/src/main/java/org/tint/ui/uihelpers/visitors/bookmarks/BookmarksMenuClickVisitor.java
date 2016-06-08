@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers.visitors;
+package org.tint.ui.uihelpers.visitors.bookmarks;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -19,6 +18,7 @@ import android.view.MenuItem;
 import org.tint.R;
 import org.tint.controllers.Controller;
 import org.tint.providers.BookmarksWrapper;
+import org.tint.storage.BookmarksPrefsStorage;
 import org.tint.tasks.HistoryBookmarksExportTask;
 import org.tint.tasks.HistoryBookmarksImportTask;
 import org.tint.ui.activities.BookmarksActivity;
@@ -126,9 +126,8 @@ public class BookmarksMenuClickVisitor implements BookmarksMenuVisitor, IHistory
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(bookmarksActivity).edit();
-                        editor.putInt(Constants.PREFERENCE_BOOKMARKS_SORT_MODE, which);
-                        editor.commit();
+                        BookmarksPrefsStorage bookmarksPrefsStorage = new BookmarksPrefsStorage();
+                        bookmarksPrefsStorage.updateBookmarkSortMode(which);
                         dialog.dismiss();
                     }
                 });

@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers;
+package org.tint.ui.uihelpers.history;
 
 import android.database.Cursor;
 import android.view.ContextMenu;

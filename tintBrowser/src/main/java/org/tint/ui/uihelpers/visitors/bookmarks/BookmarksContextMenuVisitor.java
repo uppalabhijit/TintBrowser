@@ -1,4 +1,6 @@
-package org.tint.ui.uihelpers.visitors;
+package org.tint.ui.uihelpers.visitors.bookmarks;
+
+import org.tint.ui.uihelpers.visitors.history.HistoryContextMenuVisitor;
 
 /**
  * User: Abhijit
