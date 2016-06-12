@@ -367,6 +367,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
     public void onMainActivityPause() {
         CustomWebView webView = getCurrentWebView();
         if (webView != null) {
+            webView.onPause();
             webView.pauseTimers();
         }
     }
@@ -375,6 +376,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
     public void onMainActivityResume() {
         CustomWebView webView = getCurrentWebView();
         if (webView != null) {
+            webView.onResume();
             webView.resumeTimers();
         }
     }
