@@ -1,7 +1,7 @@
-package org.tint.ui.uihelpers;
+package org.tint.ui.uihelpers.browser;
 
 import org.tint.R;
-import org.tint.ui.uihelpers.visitors.BrowserActivityMenuVisitor;
+import org.tint.ui.uihelpers.visitors.browser.BrowserActivityMenuVisitor;
 
 /**
  * Created by Abhijit on 2016-05-28.

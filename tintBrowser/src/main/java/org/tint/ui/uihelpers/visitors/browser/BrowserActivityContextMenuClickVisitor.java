@@ -1,4 +1,4 @@
-package org.tint.ui.uihelpers.visitors;
+package org.tint.ui.uihelpers.visitors.browser;
 
 import java.util.HashMap;
 
@@ -14,10 +14,9 @@ import android.widget.Toast;
 import org.tint.R;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
-import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadItem;
-import org.tint.ui.uihelpers.BrowserActivityContextMenuOptions;
+import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
 import org.tint.utils.ApplicationUtils;
 
 /**
@@ -45,72 +44,70 @@ public class BrowserActivityContextMenuClickVisitor implements BrowserActivityCo
     }
 
     @Override
-    public void visitOpen() {
+    public void visitOpen(BrowserActivityContextMenuOptions open) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
-            requestHrefNode(TintBrowserActivity.CONTEXT_MENU_OPEN);
+            requestHrefNode(open.getMenuItemId());
         } else {
             uiManager.loadUrl(url);
         }
     }
 
     @Override
-    public void visitOpenInNewTab() {
+    public void visitOpenInNewTab(BrowserActivityContextMenuOptions openInNewTab) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
-            requestHrefNode(TintBrowserActivity.CONTEXT_MENU_OPEN_IN_NEW_TAB, isIncognitoTab);
+            requestHrefNode(openInNewTab.getMenuItemId(), isIncognitoTab);
         } else {
             uiManager.addTab(url, false, isIncognitoTab);
         }
     }
 
     @Override
-    public void visitOpenInBackground() {
+    public void visitOpenInBackground(BrowserActivityContextMenuOptions openInBackground) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
-            requestHrefNode(TintBrowserActivity.CONTEXT_MENU_OPEN_IN_BACKGROUND, isIncognitoTab);
+            requestHrefNode(openInBackground.getMenuItemId(), isIncognitoTab);
         } else {
             uiManager.addTab(url, true, isIncognitoTab);
         }
     }
 
     @Override
-    public void visitDownload() {
+    public void visitDownload(BrowserActivityContextMenuOptions download) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
-            requestHrefNode(TintBrowserActivity.CONTEXT_MENU_DOWNLOAD);
+            requestHrefNode(download.getMenuItemId());
         } else {
             DownloadItem item = new DownloadItem(url);
-
             long id = ((DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(item);
             item.setId(id);
-
             Controller.getInstance().getDownloadsList().add(item);
             Toast.makeText(context, String.format(ApplicationUtils.getStringFromResource(R.string.DownloadStart), item.getFileName()), Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void visitCopy() {
+    public void visitCopy(BrowserActivityContextMenuOptions copy) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
-            requestHrefNode(TintBrowserActivity.CONTEXT_MENU_COPY);
+            requestHrefNode(copy.getMenuItemId());
         } else {
             ApplicationUtils.copyTextToClipboard(context, url, ApplicationUtils.getStringFromResource(R.string.UrlCopyToastMessage));
         }
     }
 
     @Override
-    public void visitSendMail() {
+    public void visitSendMail(BrowserActivityContextMenuOptions sendMail) {
 
     }
 
     @Override
-    public void visitShare() {
+    public void visitShare(BrowserActivityContextMenuOptions share) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
-            requestHrefNode(TintBrowserActivity.CONTEXT_MENU_SHARE);
+            requestHrefNode(share.getMenuItemId());
         } else {
             ApplicationUtils.sharePage(context, null, url);
         }
     }
 
     @Override
-    public void visitDefault() {
+    public void visitDefault(BrowserActivityContextMenuOptions defaultOption) {
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
             requestHrefNode(intActionId);
         } else {

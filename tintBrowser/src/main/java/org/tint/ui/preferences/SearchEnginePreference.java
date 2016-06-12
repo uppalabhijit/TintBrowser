@@ -25,7 +25,7 @@ import org.tint.ui.model.SearchUrlItem;
 import org.tint.tasks.SearchUrlTask;
 import org.tint.tasks.SearchUrlTask.ISearchUrlTaskListener;
 import org.tint.utils.Constants;
-import org.tint.utils.UrlUtils;
+import org.tint.domain.utils.UrlUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;

@@ -13,9 +13,10 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.utils;
+package org.tint.domain.utils;
 
 import org.tint.R;
+import org.tint.utils.Constants;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
