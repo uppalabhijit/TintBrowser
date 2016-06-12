@@ -3,11 +3,11 @@ package org.tint.domain;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.widget.Toast;
-import org.tint.ui.activities.TintBrowserActivity.DownloadModel;
+
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.model.DownloadItem;
+import org.tint.ui.model.DownloadModelItem;
 import org.tint.utils.NotificationUtils;
 
 /**
@@ -16,16 +16,16 @@ import org.tint.utils.NotificationUtils;
 public enum DownloadStatus {
     SUCCESSFUL(DownloadManager.STATUS_SUCCESSFUL) {
         @Override
-        public void execute(Context context, DownloadModel downloadModel, DownloadItem downloadItem) {
-            String localUri = downloadModel.getLocalUri();
+        public void execute(Context context, DownloadModelItem downloadModelItem, DownloadItem downloadItem) {
+            String localUri = downloadModelItem.getLocalUri();
             Toast.makeText(context, String.format(context.getString(R.string.DownloadComplete), localUri), Toast.LENGTH_SHORT).show();
             Controller.getInstance().getDownloadsList().remove(downloadItem);
             NotificationUtils.showDownloadCompleteNotification(context, context.getString(R.string.DownloadComplete), downloadItem.getFileName(), context.getString(R.string.DownloadComplete));
         }
     }, FAILED(DownloadManager.STATUS_FAILED) {
         @Override
-        public void execute(Context context, DownloadModel downloadModel, DownloadItem downloadItem) {
-            int reason = downloadModel.getFailureReason();
+        public void execute(Context context, DownloadModelItem downloadModelItem, DownloadItem downloadItem) {
+            int reason = downloadModelItem.getFailureReason();
             String message;
             switch (reason) {
                 case DownloadManager.ERROR_FILE_ERROR:
@@ -65,5 +65,5 @@ public enum DownloadStatus {
         return FAILED;
     }
 
-    public abstract void execute(Context context, TintBrowserActivity.DownloadModel downloadModel, DownloadItem downloadItem);
+    public abstract void execute(Context context, DownloadModelItem downloadModelItem, DownloadItem downloadItem);
 }

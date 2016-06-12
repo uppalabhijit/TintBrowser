@@ -46,6 +46,7 @@ import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadItem;
+import org.tint.ui.model.DownloadModelItem;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
 import org.tint.ui.uihelpers.browser.BrowserActivityMenuOptions;
 import org.tint.ui.uihelpers.visitors.browser.BrowserActivityMenuClickVisitor;
@@ -409,9 +410,9 @@ public class TintBrowserActivity extends BaseActivity {
                 query.setFilterById(id);
                 Cursor cursor = downloadManager.query(query);
 
-                CursorManager.SingleItemCursor<DownloadModel> integerSingleItemCursor = new CursorManager.SingleItemCursor<DownloadModel>(new Function<Cursor, DownloadModel>() {
+                CursorManager.SingleItemCursor<DownloadModelItem> integerSingleItemCursor = new CursorManager.SingleItemCursor<DownloadModelItem>(new Function<Cursor, DownloadModelItem>() {
                     @Override
-                    public DownloadModel apply(Cursor cursor) {
+                    public DownloadModelItem apply(Cursor cursor) {
                         int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                         int status = cursor.getInt(statusIndex);
 
@@ -420,36 +421,16 @@ public class TintBrowserActivity extends BaseActivity {
 
                         int reasonIndex = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
                         int reason = cursor.getInt(reasonIndex);
-                        return new DownloadModel(status, reason, localUri);
+                        return new DownloadModelItem(status, reason, localUri);
                     }
                 });
 
-                DownloadModel downloadModel = integerSingleItemCursor.query(cursor);
-                DownloadStatus.getByStatus(downloadModel.status).execute(context, downloadModel, item);
+                DownloadModelItem downloadModelItem = integerSingleItemCursor.query(cursor);
+                DownloadStatus.getByStatus(downloadModelItem.getStatus()).execute(context, downloadModelItem, item);
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
             Intent i = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
             startActivity(i);
-        }
-    }
-
-    public class DownloadModel {
-        private final int status;
-        private final int failureReason;
-        private final String localUri;
-
-        public int getFailureReason() {
-            return failureReason;
-        }
-
-        public String getLocalUri() {
-            return localUri;
-        }
-
-        private DownloadModel(int status, int failureReason, String localUri) {
-            this.status = status;
-            this.failureReason = failureReason;
-            this.localUri = localUri;
         }
     }
 }
