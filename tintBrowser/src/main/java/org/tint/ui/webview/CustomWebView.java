@@ -17,20 +17,17 @@ package org.tint.ui.webview;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.UUID;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
@@ -43,15 +40,13 @@ import org.apache.http.HeaderElement;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHeader;
 import org.tint.R;
-import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.Controller;
 import org.tint.domain.utils.UrlUtils;
-import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadItem;
-import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
+import org.tint.ui.uihelpers.browser.HtmlNode;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
@@ -271,19 +266,9 @@ public class CustomWebView extends WebView implements DownloadListener, Download
 
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-                HitTestResult result = ((WebView) v).getHitTestResult();
+                HitTestResult result = ((android.webkit.WebView) v).getHitTestResult();
                 int resultType = result.getType();
-
-                if ((resultType == HitTestResult.ANCHOR_TYPE) ||
-                        (resultType == HitTestResult.IMAGE_ANCHOR_TYPE) ||
-                        (resultType == HitTestResult.SRC_ANCHOR_TYPE) ||
-                        (resultType == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
-                    BrowserActivityContextMenuOptions.createAnchorItemMenu(menu, CustomWebView.this.getParentFragmentUUID().toString(), result, isPrivateBrowsingEnabled());
-                } else if (resultType == HitTestResult.IMAGE_TYPE) {
-                    BrowserActivityContextMenuOptions.createImageItemMenu(menu, CustomWebView.this.getParentFragmentUUID().toString(), result, isPrivateBrowsingEnabled());
-                } else if (resultType == HitTestResult.EMAIL_TYPE) {
-                    BrowserActivityContextMenuOptions.createEmailItemMenu(menu, CustomWebView.this.getParentFragmentUUID().toString(), result, isPrivateBrowsingEnabled());
-                }
+                HtmlNode.getFromResultType(resultType).execute(menu, CustomWebView.this.getParentFragmentUUID().toString(), result, isPrivateBrowsingEnabled());
             }
         });
     }

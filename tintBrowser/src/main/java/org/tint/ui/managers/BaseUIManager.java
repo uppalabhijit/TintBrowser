@@ -54,7 +54,6 @@ import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.StartPageFragment;
 import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
 import org.tint.ui.uihelpers.visitors.browser.BrowserActivityContextMenuClickVisitor;
-import org.tint.ui.uihelpers.visitors.browser.BrowserActivityContextMenuVisitor;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
@@ -304,10 +303,10 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
                     int intExtraHitResult = intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1);
                     boolean isIncognitoTab = intent.getBooleanExtra(Constants.EXTRA_INCOGNITO, false);
                     String url = intent.getStringExtra(Constants.EXTRA_URL);
-                    BrowserActivityContextMenuVisitor browserActivityContextMenuVisitor = new BrowserActivityContextMenuClickVisitor
+                    BrowserActivityContextMenuClickVisitor browserActivityContextMenuClickVisitor = new BrowserActivityContextMenuClickVisitor
                             (this, intExtraHitResult, actionId, isIncognitoTab, url);
                     BrowserActivityContextMenuOptions browserActivityContextMenuOptions = BrowserActivityContextMenuOptions.getById(actionId);
-                    browserActivityContextMenuOptions.accept(browserActivityContextMenuVisitor);
+                    browserActivityContextMenuOptions.accept(browserActivityContextMenuClickVisitor);
                 }
             }
         } else {

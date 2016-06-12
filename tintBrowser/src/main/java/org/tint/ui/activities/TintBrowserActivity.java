@@ -46,8 +46,8 @@ import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadItem;
-import org.tint.ui.uihelpers.browser.BrowserActivityMenuOptions;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
+import org.tint.ui.uihelpers.browser.BrowserActivityMenuOptions;
 import org.tint.ui.uihelpers.visitors.browser.BrowserActivityMenuClickVisitor;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.ApplicationUtils;
@@ -56,14 +56,6 @@ import org.tint.utils.Function;
 import org.tint.utils.Predicate;
 
 public class TintBrowserActivity extends BaseActivity {
-
-    public static final int CONTEXT_MENU_OPEN = Menu.FIRST + 10;
-    public static final int CONTEXT_MENU_OPEN_IN_NEW_TAB = Menu.FIRST + 11;
-    public static final int CONTEXT_MENU_OPEN_IN_BACKGROUND = Menu.FIRST + 12;
-    public static final int CONTEXT_MENU_DOWNLOAD = Menu.FIRST + 13;
-    public static final int CONTEXT_MENU_COPY = Menu.FIRST + 14;
-    public static final int CONTEXT_MENU_SEND_MAIL = Menu.FIRST + 15;
-    public static final int CONTEXT_MENU_SHARE = Menu.FIRST + 16;
 
     private OnSharedPreferenceChangeListener preferenceChangeListener;
 

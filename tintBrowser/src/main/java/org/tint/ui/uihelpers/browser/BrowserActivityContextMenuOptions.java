@@ -1,13 +1,8 @@
 package org.tint.ui.uihelpers.browser;
 
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.webkit.WebView;
 
 import org.tint.ui.uihelpers.visitors.browser.BrowserActivityContextMenuVisitor;
-import org.tint.ui.uihelpers.visitors.browser.BrowserCreateAnchorContextMenuVisitor;
-import org.tint.ui.uihelpers.visitors.browser.BrowserCreateEmailContextMenuVisitor;
-import org.tint.ui.uihelpers.visitors.browser.BrowserCreateImageContextMenuVisitor;
 
 /**
  * User: Abhijit
@@ -81,46 +76,6 @@ public enum BrowserActivityContextMenuOptions {
             }
         }
         return DEFAULT;
-    }
-
-
-    public static void createImageItemMenu(ContextMenu menu, String parentFragmentUUID, WebView.HitTestResult result, boolean mPrivateBrowsing) {
-        BrowserCreateImageContextMenuVisitor browserCreateImageContextMenuVisitor = new BrowserCreateImageContextMenuVisitor(menu, result, mPrivateBrowsing);
-        OPEN.accept(browserCreateImageContextMenuVisitor);
-        OPEN_IN_NEW_TAB.accept(browserCreateImageContextMenuVisitor);
-        COPY.accept(browserCreateImageContextMenuVisitor);
-        DOWNLOAD.accept(browserCreateImageContextMenuVisitor);
-        SHARE.accept(browserCreateImageContextMenuVisitor);
-
-        browserCreateImageContextMenuVisitor.createContributedContextMenu(menu, parentFragmentUUID, result.getType(), result.getExtra(),
-                mPrivateBrowsing);
-        browserCreateImageContextMenuVisitor.setHeaderTitle(menu, result.getExtra());
-    }
-
-    public static void createEmailItemMenu(ContextMenu menu, String parentFragmentUUID, WebView.HitTestResult result, boolean
-            mPrivateBrowsing) {
-        BrowserCreateEmailContextMenuVisitor browserCreateEmailContextMenuVisitor = new BrowserCreateEmailContextMenuVisitor(menu, result, mPrivateBrowsing);
-        SEND_MAIL.accept(browserCreateEmailContextMenuVisitor);
-        COPY.accept(browserCreateEmailContextMenuVisitor);
-        SHARE.accept(browserCreateEmailContextMenuVisitor);
-
-        browserCreateEmailContextMenuVisitor.createContributedContextMenu(menu, parentFragmentUUID, result.getType(), result.getExtra(),
-                mPrivateBrowsing);
-        browserCreateEmailContextMenuVisitor.setHeaderTitle(menu, result.getExtra());
-    }
-
-    public static void createAnchorItemMenu(ContextMenu menu, String parentFragmentUUID, WebView.HitTestResult result, boolean mPrivateBrowsing) {
-        BrowserCreateAnchorContextMenuVisitor browserCreateAnchorContextMenuVisitor = new BrowserCreateAnchorContextMenuVisitor(menu, result, mPrivateBrowsing);
-        OPEN.accept(browserCreateAnchorContextMenuVisitor);
-        OPEN_IN_NEW_TAB.accept(browserCreateAnchorContextMenuVisitor);
-        OPEN_IN_BACKGROUND.accept(browserCreateAnchorContextMenuVisitor);
-        COPY.accept(browserCreateAnchorContextMenuVisitor);
-        DOWNLOAD.accept(browserCreateAnchorContextMenuVisitor);
-        SHARE.accept(browserCreateAnchorContextMenuVisitor);
-
-        browserCreateAnchorContextMenuVisitor.createContributedContextMenu(menu, parentFragmentUUID, result.getType(), result.getExtra(),
-                mPrivateBrowsing);
-        browserCreateAnchorContextMenuVisitor.setHeaderTitle(menu, result.getExtra());
     }
 
     public abstract void accept(BrowserActivityContextMenuVisitor browserActivityContextMenuVisitor);
