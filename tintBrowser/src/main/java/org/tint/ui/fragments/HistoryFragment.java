@@ -92,8 +92,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public boolean onContextItemSelected(MenuItem menuItem) {
-        BookmarkHistoryItem selectedItem = null;
-        baseHistoryFragmentUi.getContextMenuSelectedItem(menuItem);
+        BookmarkHistoryItem selectedItem = baseHistoryFragmentUi.getContextMenuSelectedItem(menuItem);
 
         if (selectedItem != null) {
             historyContextMenuClickVisitor.setBookmarkHistoryItem(selectedItem);

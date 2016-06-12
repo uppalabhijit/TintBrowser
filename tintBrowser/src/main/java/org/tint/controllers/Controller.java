@@ -18,8 +18,6 @@ package org.tint.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
-
 import org.tint.addons.AddonManager;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
@@ -58,7 +56,6 @@ public class Controller {
 
     private UIManager mUIManager;
     private TintBrowserActivity mMainActivity;
-    private Context context;
     private List<DownloadItem> mDownloads;
 
     private AddonManager mAddonManager;
@@ -66,8 +63,7 @@ public class Controller {
     public void init(UIManager uiManager, TintBrowserActivity activity) {
         mUIManager = uiManager;
         mMainActivity = activity;
-        this.context = mMainActivity.getApplicationContext();
-        mAddonManager = new AddonManager(context, mUIManager);
+        mAddonManager = new AddonManager(mMainActivity.getApplicationContext(), mUIManager);
     }
 
     public UIManager getUIManager() {
@@ -76,10 +72,6 @@ public class Controller {
 
     public TintBrowserActivity getMainActivity() {
         return mMainActivity;
-    }
-
-    public Context getContext() {
-        return context;
     }
 
     public List<DownloadItem> getDownloadsList() {

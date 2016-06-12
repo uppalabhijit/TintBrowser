@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
-import org.tint.controllers.Controller;
+import org.tint.controllers.ContextRegistry;
 
 /**
  * User: Abhijit
@@ -16,7 +16,7 @@ final class SharedPrefsStorage {
     private final SharedPreferences sharedPreferences;
 
     public SharedPrefsStorage() {
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Controller.getInstance().getContext());
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ContextRegistry.get());
     }
 
     public int getInt(String key, int defVal) {
@@ -73,6 +73,10 @@ final class SharedPrefsStorage {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(key);
         editor.commit();
+    }
+
+    public boolean containsKey(String key) {
+        return sharedPreferences.contains(key);
     }
 
     public Set<String> getStringSet(String key, Set<String> defaultValue) {

@@ -28,27 +28,30 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.webkit.WebIconDatabase;
 
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
+import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
 import org.tint.domain.DownloadStatus;
-import org.tint.ui.model.DownloadItem;
 import org.tint.providers.BookmarksWrapper;
-import org.tint.ui.webview.CustomWebView;
+import org.tint.storage.CommonPrefsStorage;
+import org.tint.storage.TintBrowserActivityStorage;
 import org.tint.ui.dialogs.YesNoRememberDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.uihelpers.visitors.BrowserActivityMenuClickVisitor;
+import org.tint.ui.model.DownloadItem;
 import org.tint.ui.uihelpers.BrowserActivityMenuOptions;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
+import org.tint.ui.uihelpers.visitors.BrowserActivityMenuClickVisitor;
+import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
+import org.tint.utils.Predicate;
 
 public class TintBrowserActivity extends BaseActivity {
 
@@ -91,12 +94,10 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     protected void doOnCreate(Bundle savedInstanceState) {
+        ContextRegistry.init(this);
         uiManager = UIFactory.createUIManager(this);
-
-
         Controller.getInstance().init(uiManager, this);
         Controller.getInstance().getAddonManager().bindAddons();
-
         initializeWebIconDatabase();
 
         preferenceChangeListener = new OnSharedPreferenceChangeListener() {
@@ -112,108 +113,101 @@ public class TintBrowserActivity extends BaseActivity {
                 }
             }
         };
-
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+        final TintBrowserActivityStorage tintBrowserActivityStorage = new TintBrowserActivityStorage();
+        tintBrowserActivityStorage.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
 
         registerPackageChangeReceiver();
 
         Intent startIntent = getIntent();
 
-        boolean firstRun = prefs.getBoolean(Constants.TECHNICAL_PREFERENCE_FIRST_RUN, true);
+        boolean firstRun = tintBrowserActivityStorage.isFirstRun();
         if (firstRun) {
-            Editor editor = prefs.edit();
-            editor.putBoolean(Constants.TECHNICAL_PREFERENCE_FIRST_RUN, false);
-            editor.putInt(Constants.TECHNICAL_PREFERENCE_LAST_RUN_VERSION_CODE, ApplicationUtils.getApplicationVersionCode(this));
-            editor.commit();
+            tintBrowserActivityStorage.setFirstRunDone();
+            tintBrowserActivityStorage.setAppVersionCode(ApplicationUtils.getApplicationVersionCode(this));
 
             BookmarksWrapper.fillDefaultBookmaks(
                     getContentResolver(),
                     getResources().getStringArray(R.array.DefaultBookmarksTitles),
                     getResources().getStringArray(R.array.DefaultBookmarksUrls));
-
-            // Show tutorial only on phones.
-            if (!UIFactory.isTablet(this)) {
-                startIntent = new Intent(Intent.ACTION_VIEW);
-                startIntent.setData(Uri.parse(Constants.URL_ABOUT_TUTORIAL));
+            startIntent = showTutorialIfNeeded(startIntent, new Predicate<Integer>() {
+                @Override
+                public boolean isSatisfiedBy(Integer integer) {
+                    return true;
             }
+            });
         } else {
             int currentVersionCode = ApplicationUtils.getApplicationVersionCode(this);
-            int savedVersionCode = prefs.getInt(Constants.TECHNICAL_PREFERENCE_LAST_RUN_VERSION_CODE, -1);
+            final int savedVersionCode = tintBrowserActivityStorage.getAppVersionCode();
 
             if (currentVersionCode != savedVersionCode) {
-                Editor editor = prefs.edit();
-                editor.putInt(Constants.TECHNICAL_PREFERENCE_LAST_RUN_VERSION_CODE, currentVersionCode);
-                editor.commit();
-
-                // Show tutorial only on phones.
-                if (!UIFactory.isTablet(this)) {
-                    // Version code 9 introduce the new phone UI.
-                    if (savedVersionCode < 9) {
-                        startIntent = new Intent(Intent.ACTION_VIEW);
-                        startIntent.setData(Uri.parse(Constants.URL_ABOUT_TUTORIAL));
-                    }
+                tintBrowserActivityStorage.setAppVersionCode(currentVersionCode);
+                startIntent = showTutorialIfNeeded(startIntent, new Predicate<Integer>() {
+                    @Override
+                    public boolean isSatisfiedBy(Integer integer) {
+                        return savedVersionCode < integer;
                 }
+                });
             }
         }
 
         uiManager.onNewIntent(startIntent);
 
-        if (prefs.contains(Constants.TECHNICAL_PREFERENCE_SAVED_TABS)) {
-            final Set<String> tabs = prefs.getStringSet(Constants.TECHNICAL_PREFERENCE_SAVED_TABS, null);
+        final Set<String> tabs = tintBrowserActivityStorage.getSavedTabs();
 
-            if ((tabs != null) &&
-                    (!tabs.isEmpty())) {
+        if ((tabs != null) && (!tabs.isEmpty())) {
 
-                String tabsRestoreMode = prefs.getString(Constants.PREFERENCE_RESTORE_TABS, "ASK");
+            String tabsRestoreMode = tintBrowserActivityStorage.getRestoreTabsPreference();
 
-                if ("ASK".equals(tabsRestoreMode)) {
-                    final YesNoRememberDialog dialog = new YesNoRememberDialog(this);
+            if ("ASK".equals(tabsRestoreMode)) {
+                final YesNoRememberDialog dialog = new YesNoRememberDialog(this);
 
-                    dialog.setTitle(R.string.RestoreTabsDialogTitle);
-                    dialog.setMessage(R.string.RestoreTabsDialogMessage);
+                dialog.setTitle(R.string.RestoreTabsDialogTitle);
+                dialog.setMessage(R.string.RestoreTabsDialogMessage);
 
-                    dialog.setPositiveButtonListener(new OnClickListener() {
+                dialog.setPositiveButtonListener(new OnClickListener() {
 
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
 
-                            if (dialog.isRememberChecked()) {
-                                Editor editor = prefs.edit();
-                                editor.putString(Constants.PREFERENCE_RESTORE_TABS, "ALWAYS");
-                                editor.commit();
-                            }
-
-                            restoreTabs(tabs);
+                        if (dialog.isRememberChecked()) {
+                            tintBrowserActivityStorage.setRestoreTabsPreference("ALWAYS");
                         }
-                    });
 
-                    dialog.setNegativeButtonListener(new OnClickListener() {
+                        restoreTabs(tabs);
+                    }
+                });
 
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
+                dialog.setNegativeButtonListener(new OnClickListener() {
 
-                            if (dialog.isRememberChecked()) {
-                                Editor editor = prefs.edit();
-                                editor.putString(Constants.PREFERENCE_RESTORE_TABS, "NEVER");
-                                editor.commit();
-                            }
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+
+                        if (dialog.isRememberChecked()) {
+                            tintBrowserActivityStorage.setRestoreTabsPreference("NEVER");
                         }
-                    });
+                    }
+                });
 
-                    dialog.show();
-                } else if ("ALWAYS".equals(tabsRestoreMode)) {
-                    restoreTabs(tabs);
-                }
+                dialog.show();
+            } else if ("ALWAYS".equals(tabsRestoreMode)) {
+                restoreTabs(tabs);
             }
-
-            Editor editor = prefs.edit();
-            editor.remove(Constants.TECHNICAL_PREFERENCE_SAVED_TABS);
-            editor.commit();
         }
+        tintBrowserActivityStorage.deleteSavedTabs();
+    }
+
+    private Intent showTutorialIfNeeded(Intent startIntent, Predicate<Integer> predicate) {
+        // Show tutorial only on phones.
+        if (UIFactory.isPhone(this)) {
+            // Version code 9 introduce the new phone UI.
+            if (predicate.isSatisfiedBy(9)) {
+                startIntent = new Intent(Intent.ACTION_VIEW);
+                startIntent.setData(Uri.parse(Constants.URL_ABOUT_TUTORIAL));
+            }
+        }
+        return startIntent;
     }
 
     private void registerPackageChangeReceiver() {
@@ -363,7 +357,8 @@ public class TintBrowserActivity extends BaseActivity {
     protected void onDestroy() {
         Controller.getInstance().getAddonManager().unbindAddons();
         WebIconDatabase.getInstance().close();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+        CommonPrefsStorage commonPrefsStorage = new CommonPrefsStorage();
+        commonPrefsStorage.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
         unregisterReceiver(packagesReceiver);
 
         super.onDestroy();

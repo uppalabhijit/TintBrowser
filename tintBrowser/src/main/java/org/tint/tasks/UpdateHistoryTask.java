@@ -19,9 +19,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 
 import org.tint.providers.BookmarksWrapper;
 import org.tint.storage.CommonPrefsStorage;
@@ -47,7 +45,6 @@ public class UpdateHistoryTask extends AsyncTask<String, Void, Void> {
         BookmarksWrapper.updateHistory(mContentResolver, title, url, originalUrl);
 
         // Truncate history at most once a day.
-        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
         CommonPrefsStorage commonPrefsStorage = new CommonPrefsStorage();
         long lastTruncation = commonPrefsStorage.getLastHistoryTruncationTime();
         long now = new Date().getTime();
