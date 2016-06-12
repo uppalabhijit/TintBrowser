@@ -32,8 +32,10 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.tint.storage.BookmarksPrefsStorage;
+import org.tint.storage.CursorManager;
 import org.tint.ui.model.BookmarkHistoryItem;
 import org.tint.ui.model.FolderItem;
+import org.tint.utils.Function;
 
 public class BookmarksWrapper {
 
@@ -120,26 +122,24 @@ public class BookmarksWrapper {
         return contentResolver.query(BookmarksProvider.BOOKMARKS_URI, HISTORY_BOOKMARKS_PROJECTION, null, null, null);
     }
 
-    public static BookmarkHistoryItem getBookmarkById(ContentResolver contentResolver, long id) {
+    public static BookmarkHistoryItem getBookmarkById(ContentResolver contentResolver, final long id) {
         BookmarkHistoryItem result = null;
         String whereClause = BookmarksProvider.Columns._ID + " = " + id;
 
-        Cursor c = contentResolver.query(BookmarksProvider.BOOKMARKS_URI, HISTORY_BOOKMARKS_PROJECTION, whereClause, null, null);
-        if (c != null) {
-            if (c.moveToFirst()) {
-                String title = c.getString(c.getColumnIndex(BookmarksProvider.Columns.TITLE));
-                String url = c.getString(c.getColumnIndex(BookmarksProvider.Columns.URL));
-                boolean isBookmarks = c.getInt(c.getColumnIndex(BookmarksProvider.Columns.BOOKMARK)) > 0 ? true : false;
-                boolean isFolder = c.getInt(c.getColumnIndex(BookmarksProvider.Columns.IS_FOLDER)) > 0 ? true : false;
-                long folderId = c.getLong(c.getColumnIndex(BookmarksProvider.Columns.PARENT_FOLDER_ID));
-                byte[] favIcon = c.getBlob(c.getColumnIndex(BookmarksProvider.Columns.FAVICON));
-                result = new BookmarkHistoryItem(id, title, url, isBookmarks, isFolder, folderId, favIcon);
+        final Cursor cursor = contentResolver.query(BookmarksProvider.BOOKMARKS_URI, HISTORY_BOOKMARKS_PROJECTION, whereClause, null, null);
+        CursorManager.SingleItemCursor<BookmarkHistoryItem> bookmarkHistoryItemSingleItemCursor = new CursorManager.SingleItemCursor<BookmarkHistoryItem>(new Function<Cursor, BookmarkHistoryItem>() {
+            @Override
+            public BookmarkHistoryItem apply(Cursor cursor) {
+                String title = cursor.getString(cursor.getColumnIndex(BookmarksProvider.Columns.TITLE));
+                String url = cursor.getString(cursor.getColumnIndex(BookmarksProvider.Columns.URL));
+                boolean isBookmarks = cursor.getInt(cursor.getColumnIndex(BookmarksProvider.Columns.BOOKMARK)) > 0 ? true : false;
+                boolean isFolder = cursor.getInt(cursor.getColumnIndex(BookmarksProvider.Columns.IS_FOLDER)) > 0 ? true : false;
+                long folderId = cursor.getLong(cursor.getColumnIndex(BookmarksProvider.Columns.PARENT_FOLDER_ID));
+                byte[] favIcon = cursor.getBlob(cursor.getColumnIndex(BookmarksProvider.Columns.FAVICON));
+                return new BookmarkHistoryItem(id, title, url, isBookmarks, isFolder, folderId, favIcon);
             }
-
-            c.close();
-        }
-
-        return result;
+        });
+        return bookmarkHistoryItemSingleItemCursor.query(cursor);
     }
 
     /**

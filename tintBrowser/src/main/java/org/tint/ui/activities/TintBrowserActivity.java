@@ -408,21 +408,48 @@ public class TintBrowserActivity extends BaseActivity {
                 Query query = new Query();
                 query.setFilterById(id);
                 Cursor cursor = downloadManager.query(query);
-                CursorManager.SingleItemCursor<Integer> integerSingleItemCursor = new CursorManager.SingleItemCursor<Integer>(new Function<Cursor, Integer>() {
+
+                CursorManager.SingleItemCursor<DownloadModel> integerSingleItemCursor = new CursorManager.SingleItemCursor<DownloadModel>(new Function<Cursor, DownloadModel>() {
                     @Override
-                    public Integer apply(Cursor cursor) {
+                    public DownloadModel apply(Cursor cursor) {
                         int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                         int status = cursor.getInt(statusIndex);
-                        return status;
+
+                        int localUriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+                        String localUri = cursor.getString(localUriIndex);
+
+                        int reasonIndex = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
+                        int reason = cursor.getInt(reasonIndex);
+                        return new DownloadModel(status, reason, localUri);
                     }
                 });
-                integerSingleItemCursor.query(cursor);
-                int status = integerSingleItemCursor.getT();
-                DownloadStatus.getByStatus(status).execute(context, cursor, item);
+
+                DownloadModel downloadModel = integerSingleItemCursor.query(cursor);
+                DownloadStatus.getByStatus(downloadModel.status).execute(context, downloadModel, item);
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
             Intent i = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
             startActivity(i);
+        }
+    }
+
+    public class DownloadModel {
+        private final int status;
+        private final int failureReason;
+        private final String localUri;
+
+        public int getFailureReason() {
+            return failureReason;
+        }
+
+        public String getLocalUri() {
+            return localUri;
+        }
+
+        private DownloadModel(int status, int failureReason, String localUri) {
+            this.status = status;
+            this.failureReason = failureReason;
+            this.localUri = localUri;
         }
     }
 }

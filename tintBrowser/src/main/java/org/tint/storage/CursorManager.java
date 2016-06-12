@@ -6,6 +6,7 @@ import java.util.List;
 import android.database.Cursor;
 
 import org.tint.utils.Function;
+import org.tint.utils.IOUtils;
 import org.tint.utils.Predicate;
 
 /**
@@ -24,41 +25,41 @@ public class CursorManager {
             this.cursorTFunction = cursorTFunction;
         }
 
-        public final void query(Cursor cursor) {
-            query(cursor, offset, max);
+        public final List<T> execute(Cursor cursor) {
+            return execute(cursor, offset, max);
         }
 
-        public final void query(final Cursor cursor, int offset, final int max) {
-            if (cursor != null && cursor.moveToPosition(offset)) {
-                Predicate<Integer> p;
-                if (max != -1) {
-                    p = new Predicate<Integer>() {
-                        @Override
-                        public boolean isSatisfiedBy(Integer itemsCollected) {
-                            return itemsCollected < max && cursor.moveToPosition(itemsCollected);
-                        }
-                    };
-                } else {
-                    p = new Predicate() {
-                        @Override
-                        public boolean isSatisfiedBy(Object o) {
-                            return cursor.moveToNext();
-                        }
-                    };
+        public final List<T> execute(final Cursor cursor, int offset, final int max) {
+            List<T> list = new ArrayList<T>();
+            try {
+                if (cursor != null && cursor.moveToPosition(offset)) {
+                    Predicate<Integer> p;
+                    if (max != -1) {
+                        p = new Predicate<Integer>() {
+                            @Override
+                            public boolean isSatisfiedBy(Integer itemsCollected) {
+                                return itemsCollected < max && cursor.moveToPosition(itemsCollected);
+                            }
+                        };
+                    } else {
+                        p = new Predicate() {
+                            @Override
+                            public boolean isSatisfiedBy(Object o) {
+                                return cursor.moveToNext();
+                            }
+                        };
+                    }
+                    int itemsCollected = 0;
+                    while (p.isSatisfiedBy(itemsCollected)) {
+                        list.add(cursorTFunction.apply(cursor));
+                        itemsCollected++;
+                    }
                 }
-                int itemsCollected = 0;
-                while (p.isSatisfiedBy(itemsCollected)) {
-                    execute(cursor);
-                    itemsCollected++;
-                }
+            } finally {
+                IOUtils.closeQuietly(cursor);
             }
+            return list;
         }
-
-        protected void execute(Cursor cursor) {
-            getOutputFunction().apply(cursorTFunction.apply(cursor));
-        }
-
-        protected abstract Function<T, Void> getOutputFunction();
     }
 
     public static class ListCursor<T> extends AbstractCursor<T> {
@@ -70,24 +71,8 @@ public class CursorManager {
             this.function = function;
         }
 
-        @Override
-        protected void execute(Cursor cursor) {
-            list.add(function.apply(cursor));
-        }
-
-        public List<T> getList() {
-            return list;
-        }
-
-        @Override
-        protected Function<T, Void> getOutputFunction() {
-            return new Function<T, Void>() {
-                @Override
-                public Void apply(T t) {
-                    list.add(t);
-                    return null;
-                }
-            };
+        public final List<T> query(Cursor cursor) {
+            return execute(cursor);
         }
     }
 
@@ -100,24 +85,12 @@ public class CursorManager {
             this.function = function;
         }
 
-        @Override
-        protected void execute(Cursor cursor) {
-            t = function.apply(cursor);
-        }
-
-        @Override
-        protected Function<T, Void> getOutputFunction() {
-            return new Function<T, Void>() {
-                @Override
-                public Void apply(T t) {
-                    SingleItemCursor.this.t = t;
-                    return null;
-                }
-            };
-        }
-
-        public T getT() {
-            return t;
+        public final T query(Cursor cursor) {
+            List<T> list = execute(cursor);
+            if (list.size() > 0) {
+                return list.get(0);
+            }
+            return null;
         }
     }
 }
