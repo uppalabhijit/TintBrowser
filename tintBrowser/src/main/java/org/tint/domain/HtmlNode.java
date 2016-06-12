@@ -1,8 +1,9 @@
-package org.tint.ui.uihelpers.browser;
+package org.tint.domain;
 
 import android.view.ContextMenu;
 import android.webkit.WebView.HitTestResult;
 
+import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
 import org.tint.ui.uihelpers.visitors.browser.BrowserCreateAnchorContextMenuVisitor;
 import org.tint.ui.uihelpers.visitors.browser.BrowserCreateEmailContextMenuVisitor;
 import org.tint.ui.uihelpers.visitors.browser.BrowserCreateImageContextMenuVisitor;

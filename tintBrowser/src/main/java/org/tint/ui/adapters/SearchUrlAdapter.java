@@ -18,7 +18,7 @@ package org.tint.ui.adapters;
 import java.util.List;
 
 import org.tint.R;
-import org.tint.ui.model.SearchUrlGroup;
+import org.tint.ui.model.SearchUrlGroupItem;
 import org.tint.ui.model.SearchUrlItem;
 
 import android.content.Context;
@@ -31,9 +31,9 @@ import android.widget.TextView;
 public class SearchUrlAdapter extends BaseExpandableListAdapter {
 
 	private Context mContext;
-	private List<SearchUrlGroup> mData;
+	private List<SearchUrlGroupItem> mData;
 	
-	public SearchUrlAdapter(Context context, List<SearchUrlGroup> data) {
+	public SearchUrlAdapter(Context context, List<SearchUrlGroupItem> data) {
 		mContext = context;
 		mData = data;
 	}
@@ -95,7 +95,7 @@ public class SearchUrlAdapter extends BaseExpandableListAdapter {
         	item = (TextView) convertView;
         }
         
-        item.setText(((SearchUrlGroup) getGroup(groupPosition)).getName());
+        item.setText(((SearchUrlGroupItem) getGroup(groupPosition)).getName());
         
         return item;
 	}

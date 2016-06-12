@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class SearchUrlGroup {
+public class SearchUrlGroupItem {
 	
 	private String mName;
 	private List<SearchUrlItem> mItems;
 	
-	public SearchUrlGroup(String name) {
+	public SearchUrlGroupItem(String name) {
 		mName = name;
 		mItems = new ArrayList<SearchUrlItem>();
 	}	

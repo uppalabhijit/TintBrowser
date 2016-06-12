@@ -33,7 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tint.R;
-import org.tint.ui.model.SearchUrlGroup;
+import org.tint.ui.model.SearchUrlGroupItem;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -43,7 +43,7 @@ public class SearchUrlTask extends AsyncTask<Void, Integer, String> {
 	private Context mContext;
 	private ISearchUrlTaskListener mListener;
 	
-	private Map<String, SearchUrlGroup> mResults;
+	private Map<String, SearchUrlGroupItem> mResults;
 	
 	public SearchUrlTask(Context context, ISearchUrlTaskListener listener) {
 		super();
@@ -51,19 +51,19 @@ public class SearchUrlTask extends AsyncTask<Void, Integer, String> {
 		mContext = context;
 		mListener = listener;
 		
-		mResults = new HashMap<String, SearchUrlGroup>();
+		mResults = new HashMap<String, SearchUrlGroupItem>();
 	}
 	
-	public List<SearchUrlGroup> getResults() {
-		List<SearchUrlGroup> result = new ArrayList<SearchUrlGroup>();
-		for (SearchUrlGroup group : mResults.values()) {
+	public List<SearchUrlGroupItem> getResults() {
+		List<SearchUrlGroupItem> result = new ArrayList<SearchUrlGroupItem>();
+		for (SearchUrlGroupItem group : mResults.values()) {
 			group.sort();
 			result.add(group);
 		}
 		
-		Collections.sort(result, new Comparator<SearchUrlGroup>() {
+		Collections.sort(result, new Comparator<SearchUrlGroupItem>() {
 			@Override
-			public int compare(SearchUrlGroup lhs, SearchUrlGroup rhs) {						
+			public int compare(SearchUrlGroupItem lhs, SearchUrlGroupItem rhs) {
 				return lhs.getName().compareTo(rhs.getName());
 			}		        	
         });
@@ -107,9 +107,9 @@ public class SearchUrlTask extends AsyncTask<Void, Integer, String> {
 		        	
 		        	String groupName = jsonObject.getString("group");
 		        	
-		        	SearchUrlGroup group = mResults.get(groupName);
+		        	SearchUrlGroupItem group = mResults.get(groupName);
 		        	if (group == null) {
-		        		group = new SearchUrlGroup(groupName);
+		        		group = new SearchUrlGroupItem(groupName);
 		        		mResults.put(groupName, group);
 		        	}
 		        	

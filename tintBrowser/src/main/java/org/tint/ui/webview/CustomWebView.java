@@ -46,7 +46,7 @@ import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadItem;
-import org.tint.ui.uihelpers.browser.HtmlNode;
+import org.tint.domain.HtmlNode;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 

@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.tint.R;
 import org.tint.ui.adapters.SearchUrlAdapter;
-import org.tint.ui.model.SearchUrlGroup;
+import org.tint.ui.model.SearchUrlGroupItem;
 import org.tint.ui.model.SearchUrlItem;
 import org.tint.tasks.SearchUrlTask;
 import org.tint.tasks.SearchUrlTask.ISearchUrlTaskListener;
@@ -191,7 +191,7 @@ public class SearchEnginePreference extends DialogPreference implements ISearchU
 			mProgressText.setVisibility(View.INVISIBLE);
 			mList.setVisibility(View.VISIBLE);
 			
-			List<SearchUrlGroup> results = mTask.getResults();
+			List<SearchUrlGroupItem> results = mTask.getResults();
 			
 			mAdapter = new SearchUrlAdapter(getContext(), results);
 			
