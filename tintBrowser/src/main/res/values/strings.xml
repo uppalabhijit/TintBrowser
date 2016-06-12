@@ -58,7 +58,7 @@
     <string name="DownloadDialogTitle">Download</string>
     <string name="DownloadInIncognito">Incognito download</string>
     <string name="DownloadStart">Downloading %1$s&#8230;</string>
-    <string name="DownloadComplete">Download complete.</string>
+    <string name="DownloadComplete">Download complete. %1$s</string>
     <string name="DownloadFailedWithErrorMessage">Download failed: %1$s.</string>
     <string name="DownloadErrorDisk">Disk error, check if you have a storage media, and if it has enough space left.</string>
     <string name="DownloadErrorHttp">HTTP error</string>
