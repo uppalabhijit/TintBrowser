@@ -15,22 +15,20 @@
 
 package org.tint.ui.managers;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.DownloadManager;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,14 +38,12 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebChromeClient.CustomViewCallback;
 import android.webkit.WebView;
-import android.webkit.WebView.HitTestResult;
 import android.webkit.WebViewDatabase;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import org.tint.R;
-import org.tint.controllers.Controller;
 import org.tint.providers.BookmarksWrapper;
+import org.tint.storage.BrowserSettingsStorage;
 import org.tint.storage.TintBrowserActivityStorage;
 import org.tint.tasks.ThumbnailSaver;
 import org.tint.ui.activities.BookmarksActivity;
@@ -56,7 +52,9 @@ import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.dialogs.GeolocationPermissionsDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.StartPageFragment;
-import org.tint.ui.model.DownloadItem;
+import org.tint.ui.uihelpers.BrowserActivityContextMenuOptions;
+import org.tint.ui.uihelpers.visitors.BrowserActivityContextMenuClickVisitor;
+import org.tint.ui.uihelpers.visitors.BrowserActivityContextMenuVisitor;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
@@ -69,7 +67,6 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
 
-    private static final int FOCUS_NODE_HREF = 102;
 
     private FrameLayout mFullscreenContainer;
     private View mCustomView;
@@ -90,7 +87,8 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
 
     protected StartPageFragment mStartPageFragment = null;
 
-    private Handler mHandler;
+    private final TintBrowserActivityStorage tintBrowserActivityStorage = new TintBrowserActivityStorage();
+    private final BrowserSettingsStorage browserSettingsStorage = new BrowserSettingsStorage();
 
     public BaseUIManager(TintBrowserActivity activity) {
         mActivity = activity;
@@ -101,8 +99,6 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
         mGeolocationPermissionsDialog = null;
 
         setupUI();
-
-        startHandler();
     }
 
     protected abstract String getCurrentUrl();
@@ -139,10 +135,8 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
     @Override
     public void addTab(boolean loadHomePage, boolean privateBrowsing) {
         if (loadHomePage) {
-            addTab(
-                    PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREFERENCE_HOME_PAGE, Constants.URL_ABOUT_START),
-                    false,
-                    privateBrowsing);
+            String userStartPage = tintBrowserActivityStorage.getUserHomePage();
+            addTab(userStartPage, false, privateBrowsing);
         } else {
             addTab(null, false, privateBrowsing);
         }
@@ -195,7 +189,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
     @Override
     public void loadHomePage() {
         mHomePageLoading = true;
-        loadUrl(PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREFERENCE_HOME_PAGE, Constants.URL_ABOUT_START));
+        loadUrl(tintBrowserActivityStorage.getUserHomePage());
     }
 
     @Override
@@ -203,7 +197,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
         mHomePageLoading = true;
         loadUrl(
                 tabId,
-                PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREFERENCE_HOME_PAGE, Constants.URL_ABOUT_START),
+                tintBrowserActivityStorage.getUserHomePage(),
                 loadInCurrentTabIfNotFound);
     }
 
@@ -293,10 +287,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
 
                 if (!TextUtils.isEmpty(url)) {
                     if (!isCurrentTabReusable()) {
-                        addTab(url,
-                                false,
-                                PreferenceManager.getDefaultSharedPreferences(this.getMainActivity()).
-                                        getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
+                        addTab(url, false, tintBrowserActivityStorage.getIncognitoByDefaultStatus());
                     } else {
                         loadUrl(url);
                     }
@@ -304,85 +295,19 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
                     // We do not have an url. Open a new tab if there is no tab currently opened,
                     // else do nothing.
                     if (getTabCount() <= 0) {
-                        addTab(true, PreferenceManager.getDefaultSharedPreferences(this.getMainActivity()).
-                                getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
+                        addTab(true, tintBrowserActivityStorage.getIncognitoByDefaultStatus());
                     }
                 }
             } else if (Constants.ACTION_BROWSER_CONTEXT_MENU.equals(intent.getAction())) {
                 if (intent.hasExtra(Constants.EXTRA_ACTION_ID)) {
                     int actionId = intent.getIntExtra(Constants.EXTRA_ACTION_ID, -1);
-
-                    switch (actionId) {
-                        case TintBrowserActivity.CONTEXT_MENU_OPEN:
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(TintBrowserActivity.CONTEXT_MENU_OPEN);
-                            } else {
-                                loadUrl(intent.getStringExtra(Constants.EXTRA_URL));
-                            }
-                            break;
-
-                        case TintBrowserActivity.CONTEXT_MENU_OPEN_IN_NEW_TAB:
-
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(TintBrowserActivity.CONTEXT_MENU_OPEN_IN_NEW_TAB, intent.getBooleanExtra(Constants.EXTRA_INCOGNITO, false));
-                            } else {
-                                addTab(intent.getStringExtra(Constants.EXTRA_URL), false, intent.getBooleanExtra(Constants.EXTRA_INCOGNITO, false));
-                            }
-                            break;
-
-                        case TintBrowserActivity.CONTEXT_MENU_OPEN_IN_BACKGROUND:
-
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(TintBrowserActivity.CONTEXT_MENU_OPEN_IN_BACKGROUND, intent.getBooleanExtra(Constants.EXTRA_INCOGNITO, false));
-                            } else {
-                                addTab(intent.getStringExtra(Constants.EXTRA_URL), true, intent.getBooleanExtra(Constants.EXTRA_INCOGNITO, false));
-                            }
-                            break;
-
-                        case TintBrowserActivity.CONTEXT_MENU_COPY:
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(TintBrowserActivity.CONTEXT_MENU_COPY);
-                            } else {
-                                ApplicationUtils.copyTextToClipboard(mActivity, intent.getStringExtra(Constants.EXTRA_URL), mActivity.getResources().getString(R.string.UrlCopyToastMessage));
-                            }
-                            break;
-
-                        case TintBrowserActivity.CONTEXT_MENU_DOWNLOAD:
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(TintBrowserActivity.CONTEXT_MENU_DOWNLOAD);
-                            } else {
-                                DownloadItem item = new DownloadItem(intent.getStringExtra(Constants.EXTRA_URL));
-
-                                long id = ((DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(item);
-                                item.setId(id);
-
-                                Controller.getInstance().getDownloadsList().add(item);
-
-                                Toast.makeText(mActivity, String.format(mActivity.getString(R.string.DownloadStart), item.getFileName()), Toast.LENGTH_SHORT).show();
-                            }
-                            break;
-
-                        case TintBrowserActivity.CONTEXT_MENU_SHARE:
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(TintBrowserActivity.CONTEXT_MENU_SHARE);
-                            } else {
-                                ApplicationUtils.sharePage(mActivity, null, intent.getStringExtra(Constants.EXTRA_URL));
-                            }
-                            break;
-
-                        default:
-                            if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1)) {
-                                requestHrefNode(actionId);
-                            } else {
-                                Controller.getInstance().getAddonManager().onContributedContextLinkMenuItemSelected(
-                                        mActivity,
-                                        actionId,
-                                        intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1),
-                                        intent.getStringExtra(Constants.EXTRA_URL),
-                                        getCurrentWebView());
-                            }
-                            break;
-                    }
+                    int intExtraHitResult = intent.getIntExtra(Constants.EXTRA_HIT_TEST_RESULT, -1);
+                    boolean isIncognitoTab = intent.getBooleanExtra(Constants.EXTRA_INCOGNITO, false);
+                    String url = intent.getStringExtra(Constants.EXTRA_URL);
+                    BrowserActivityContextMenuVisitor browserActivityContextMenuVisitor = new BrowserActivityContextMenuClickVisitor
+                            (this, intExtraHitResult, actionId, isIncognitoTab, url);
+                    BrowserActivityContextMenuOptions browserActivityContextMenuOptions = BrowserActivityContextMenuOptions.getById(actionId);
+                    browserActivityContextMenuOptions.accept(browserActivityContextMenuVisitor);
                 }
             }
         } else {
@@ -405,12 +330,9 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
 
         if (mHomePageLoading) {
             mHomePageLoading = false;
-
-            if (PreferenceManager.getDefaultSharedPreferences(mActivity).getBoolean(Constants.TECHNICAL_PREFERENCE_HOMEPAGE_URL_UPDATE_NEEDED, false)) {
-                Editor editor = PreferenceManager.getDefaultSharedPreferences(mActivity).edit();
-                editor.putBoolean(Constants.TECHNICAL_PREFERENCE_HOMEPAGE_URL_UPDATE_NEEDED, false);
-                editor.putString(Constants.PREFERENCE_HOME_PAGE, url);
-                editor.commit();
+            if (browserSettingsStorage.isHomePageUrlUpdateNeeded()) {
+                browserSettingsStorage.setHomePageUrlUpdateNeeded(false);
+                tintBrowserActivityStorage.setUserHomePage(url);
             }
         }
 
@@ -533,23 +455,19 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
 
     @Override
     public boolean isFullScreen() {
-        return PreferenceManager.getDefaultSharedPreferences(mActivity).getBoolean(Constants.PREFERENCE_FULL_SCREEN, false);
+        return tintBrowserActivityStorage.isFullScreen();
     }
 
     @Override
     public void toggleFullScreen() {
         boolean newValue = !isFullScreen();
-        Editor editor = PreferenceManager.getDefaultSharedPreferences(mActivity).edit();
-        editor.putBoolean(Constants.PREFERENCE_FULL_SCREEN, newValue);
-        editor.commit();
-
+        tintBrowserActivityStorage.setFullScreen(newValue);
         setFullScreenFromPreferences();
     }
 
 
     @Override
     public void saveTabs() {
-        TintBrowserActivityStorage tintBrowserActivityStorage = new TintBrowserActivityStorage();
         String userStartPage = tintBrowserActivityStorage.getUserHomePage();
 
         Set<String> tabs = new HashSet<String>();
@@ -573,97 +491,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
     }
 
     protected boolean isHomePageStartPage() {
-        return Constants.URL_ABOUT_START.equals(PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREFERENCE_HOME_PAGE, Constants.URL_ABOUT_START));
-    }
-
-    private void startHandler() {
-        mHandler = new Handler() {
-
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case FOCUS_NODE_HREF:
-                        String url = (String) msg.getData().get("url");
-                        String src = (String) msg.getData().get("src");
-
-                        if (url == "") {
-                            url = src;
-                        }
-
-                        if (TextUtils.isEmpty(url)) {
-                            break;
-                        }
-
-                        switch (msg.arg1) {
-                            case TintBrowserActivity.CONTEXT_MENU_OPEN:
-                                loadUrl(url);
-                                break;
-
-                            case TintBrowserActivity.CONTEXT_MENU_OPEN_IN_NEW_TAB:
-                                addTab(url, false, msg.arg2 > 0 ? true : false);
-                                break;
-
-                            case TintBrowserActivity.CONTEXT_MENU_OPEN_IN_BACKGROUND:
-                                addTab(url, true, msg.arg2 > 0 ? true : false);
-                                break;
-
-                            case TintBrowserActivity.CONTEXT_MENU_COPY:
-                                ApplicationUtils.copyTextToClipboard(mActivity, url, mActivity.getResources().getString(R.string.UrlCopyToastMessage));
-                                break;
-
-                            case TintBrowserActivity.CONTEXT_MENU_DOWNLOAD:
-                                DownloadItem item = new DownloadItem(url);
-
-                                long id = ((DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(item);
-                                item.setId(id);
-
-                                Controller.getInstance().getDownloadsList().add(item);
-
-                                Toast.makeText(mActivity, String.format(mActivity.getString(R.string.DownloadStart), item.getFileName()), Toast.LENGTH_SHORT).show();
-                                break;
-
-                            case TintBrowserActivity.CONTEXT_MENU_SHARE:
-                                ApplicationUtils.sharePage(mActivity, null, url);
-                                break;
-
-                            default:
-                                Controller.getInstance().getAddonManager().onContributedContextLinkMenuItemSelected(
-                                        mActivity,
-                                        msg.arg1,
-                                        HitTestResult.SRC_IMAGE_ANCHOR_TYPE,
-                                        url,
-                                        getCurrentWebView());
-                                break;
-                        }
-
-                        break;
-                    default:
-                        super.handleMessage(msg);
-                }
-            }
-
-        };
-    }
-
-    private void requestHrefNode(int action) {
-        requestHrefNode(action, false);
-    }
-
-    private void requestHrefNode(int action, boolean incognito) {
-        WebView webView = getCurrentWebView();
-
-        if (webView != null) {
-            final HashMap<String, WebView> hrefMap = new HashMap<String, WebView>();
-            hrefMap.put("webview", webView);
-
-            final Message msg = mHandler.obtainMessage(
-                    FOCUS_NODE_HREF,
-                    action,
-                    incognito ? 1 : 0,
-                    hrefMap);
-
-            webView.requestFocusNodeHref(msg);
-        }
+        return Constants.URL_ABOUT_START.equals(tintBrowserActivityStorage.getUserHomePage());
     }
 
     /**
@@ -673,7 +501,7 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
      * @return True if the current tab can be reused.
      */
     private boolean isCurrentTabReusable() {
-        String homePageUrl = PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREFERENCE_HOME_PAGE, Constants.URL_ABOUT_START);
+        String homePageUrl = tintBrowserActivityStorage.getUserHomePage();
         BaseWebViewFragment currentWebViewFragment = getCurrentWebViewFragment();
         CustomWebView currentWebView = getCurrentWebView();
 
@@ -692,7 +520,5 @@ public abstract class BaseUIManager implements UIManager {//, WebViewFragmentLis
         public boolean onTouchEvent(MotionEvent evt) {
             return true;
         }
-
     }
-
 }

@@ -39,6 +39,7 @@ import org.tint.controllers.Controller;
 import org.tint.domain.DownloadStatus;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.storage.CommonPrefsStorage;
+import org.tint.storage.CursorManager;
 import org.tint.storage.TintBrowserActivityStorage;
 import org.tint.ui.dialogs.YesNoRememberDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
@@ -51,6 +52,7 @@ import org.tint.ui.uihelpers.visitors.BrowserActivityMenuClickVisitor;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
+import org.tint.utils.Function;
 import org.tint.utils.Predicate;
 
 public class TintBrowserActivity extends BaseActivity {
@@ -133,7 +135,7 @@ public class TintBrowserActivity extends BaseActivity {
                 @Override
                 public boolean isSatisfiedBy(Integer integer) {
                     return true;
-            }
+                }
             });
         } else {
             int currentVersionCode = ApplicationUtils.getApplicationVersionCode(this);
@@ -145,7 +147,7 @@ public class TintBrowserActivity extends BaseActivity {
                     @Override
                     public boolean isSatisfiedBy(Integer integer) {
                         return savedVersionCode < integer;
-                }
+                    }
                 });
             }
         }
@@ -414,11 +416,17 @@ public class TintBrowserActivity extends BaseActivity {
                 Query query = new Query();
                 query.setFilterById(id);
                 Cursor cursor = downloadManager.query(query);
-                if (cursor.moveToFirst()) {
-                    int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                    int status = cursor.getInt(statusIndex);
-                    DownloadStatus.getByStatus(status).execute(context, cursor, item);
-                }
+                CursorManager.SingleItemCursor<Integer> integerSingleItemCursor = new CursorManager.SingleItemCursor<Integer>(new Function<Cursor, Integer>() {
+                    @Override
+                    public Integer apply(Cursor cursor) {
+                        int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        int status = cursor.getInt(statusIndex);
+                        return status;
+                    }
+                });
+                integerSingleItemCursor.query(cursor);
+                int status = integerSingleItemCursor.getT();
+                DownloadStatus.getByStatus(status).execute(context, cursor, item);
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
             Intent i = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
