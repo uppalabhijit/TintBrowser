@@ -15,8 +15,6 @@
 
 package org.tint.ui.webview;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -29,8 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.*;
 import android.webkit.GeolocationPermissions.Callback;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import org.tint.R;
 import org.tint.tasks.UpdateFaviconTask;
@@ -114,7 +110,6 @@ public class CustomWebChromeClient extends WebChromeClient {
         if (mDefaultVideoPoster == null) {
             mDefaultVideoPoster = BitmapFactory.decodeResource(mUIManager.getMainActivity().getResources(), R.drawable.default_video_poster);
         }
-
         return mDefaultVideoPoster;
     }
 
@@ -130,80 +125,17 @@ public class CustomWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
-        new AlertDialog.Builder(mUIManager.getMainActivity())
-                .setTitle(R.string.JavaScriptAlertDialog)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok,
-                        new AlertDialog.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
-                            }
-                        })
-                .setCancelable(false)
-                .create()
-                .show();
-
-        return true;
+        return IJsPromptsManager.Factory.create(mUIManager).onJsAlert(view, url, message, result);
     }
 
     @Override
     public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
-        new AlertDialog.Builder(mUIManager.getMainActivity())
-                .setTitle(R.string.JavaScriptConfirmDialog)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
-                            }
-                        })
-                .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.cancel();
-                            }
-                        })
-                .create()
-                .show();
-
-        return true;
+        return IJsPromptsManager.Factory.create(mUIManager).onJsConfirm(view, url, message, result);
     }
 
     @Override
     public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, final JsPromptResult result) {
-
-        final LayoutInflater factory = LayoutInflater.from(mUIManager.getMainActivity());
-        final View v = factory.inflate(R.layout.javascript_prompt_dialog, null);
-        ((TextView) v.findViewById(R.id.JavaScriptPromptMessage)).setText(message);
-        ((EditText) v.findViewById(R.id.JavaScriptPromptInput)).setText(defaultValue);
-
-        new AlertDialog.Builder(mUIManager.getMainActivity())
-                .setTitle(R.string.JavaScriptPromptDialog)
-                .setView(v)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                String value = ((EditText) v.findViewById(R.id.JavaScriptPromptInput)).getText()
-                                        .toString();
-                                result.confirm(value);
-                            }
-                        })
-                .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                result.cancel();
-                            }
-                        })
-                .setOnCancelListener(
-                        new DialogInterface.OnCancelListener() {
-                            public void onCancel(DialogInterface dialog) {
-                                result.cancel();
-                            }
-                        })
-                .show();
-
-        return true;
-
+        return IJsPromptsManager.Factory.create(mUIManager).onJsPrompt(view, url, message, defaultValue, result);
     }
 
     @Override
@@ -241,5 +173,4 @@ public class CustomWebChromeClient extends WebChromeClient {
         }
         return true;
     }
-
 }
