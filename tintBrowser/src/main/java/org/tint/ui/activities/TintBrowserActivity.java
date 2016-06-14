@@ -21,39 +21,40 @@ import java.util.Set;
 
 import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.DownloadManager;
-import android.app.DownloadManager.Query;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.*;
-import android.view.View.OnClickListener;
+import android.view.ActionMode;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.WebIconDatabase;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
+import org.tint.domain.DownloadManagerWrapper;
 import org.tint.domain.DownloadStatus;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.storage.CommonPrefsStorage;
-import org.tint.storage.CursorManager;
 import org.tint.storage.TintBrowserActivityStorage;
-import org.tint.ui.dialogs.YesNoRememberDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadItem;
 import org.tint.ui.model.DownloadModelItem;
+import org.tint.ui.uihelpers.TabRestoreMode;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
 import org.tint.ui.uihelpers.browser.BrowserActivityMenuOptions;
 import org.tint.ui.uihelpers.visitors.browser.BrowserActivityMenuClickVisitor;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
-import org.tint.utils.Function;
 import org.tint.utils.Predicate;
 
 public class TintBrowserActivity extends BaseActivity {
@@ -94,7 +95,7 @@ public class TintBrowserActivity extends BaseActivity {
         Controller.getInstance().init(uiManager, this);
         Controller.getInstance().getAddonManager().bindAddons();
         initializeWebIconDatabase();
-
+        getLogger().debug("[TintBrowserActivity] [doOnCreate] creating the activity");
         preferenceChangeListener = new OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -150,45 +151,8 @@ public class TintBrowserActivity extends BaseActivity {
         final Set<String> tabs = tintBrowserActivityStorage.getSavedTabs();
 
         if ((tabs != null) && (!tabs.isEmpty())) {
-
             String tabsRestoreMode = tintBrowserActivityStorage.getRestoreTabsPreference();
-
-            if ("ASK".equals(tabsRestoreMode)) {
-                final YesNoRememberDialog dialog = new YesNoRememberDialog(this);
-
-                dialog.setTitle(R.string.RestoreTabsDialogTitle);
-                dialog.setMessage(R.string.RestoreTabsDialogMessage);
-
-                dialog.setPositiveButtonListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-
-                        if (dialog.isRememberChecked()) {
-                            tintBrowserActivityStorage.setRestoreTabsPreference("ALWAYS");
-                        }
-
-                        restoreTabs(tabs);
-                    }
-                });
-
-                dialog.setNegativeButtonListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-
-                        if (dialog.isRememberChecked()) {
-                            tintBrowserActivityStorage.setRestoreTabsPreference("NEVER");
-                        }
-                    }
-                });
-
-                dialog.show();
-            } else if ("ALWAYS".equals(tabsRestoreMode)) {
-                restoreTabs(tabs);
-            }
+            TabRestoreMode.getFromString(tabsRestoreMode).execute(this, tintBrowserActivityStorage, tabs);
         }
         tintBrowserActivityStorage.deleteSavedTabs();
     }
@@ -226,19 +190,6 @@ public class TintBrowserActivity extends BaseActivity {
             }
         });
 
-    }
-
-    private void restoreTabs(Set<String> tabs) {
-        boolean first = true;
-
-        for (String url : tabs) {
-            if (first) {
-                uiManager.loadUrl(url);
-                first = false;
-            } else {
-                uiManager.addTab(url, !first, false);
-            }
-        }
     }
 
     @Override
@@ -402,35 +353,19 @@ public class TintBrowserActivity extends BaseActivity {
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             DownloadItem item = Controller.getInstance().getDownloadItemById(id);
-
             if (item != null) {
                 // This is one of our downloads.
-                final DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                Query query = new Query();
-                query.setFilterById(id);
-                Cursor cursor = downloadManager.query(query);
-
-                CursorManager.SingleItemCursor<DownloadModelItem> integerSingleItemCursor = new CursorManager.SingleItemCursor<DownloadModelItem>(new Function<Cursor, DownloadModelItem>() {
-                    @Override
-                    public DownloadModelItem apply(Cursor cursor) {
-                        int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                        int status = cursor.getInt(statusIndex);
-
-                        int localUriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-                        String localUri = cursor.getString(localUriIndex);
-
-                        int reasonIndex = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
-                        int reason = cursor.getInt(reasonIndex);
-                        return new DownloadModelItem(status, reason, localUri);
-                    }
-                });
-
-                DownloadModelItem downloadModelItem = integerSingleItemCursor.query(cursor);
-                DownloadStatus.getByStatus(downloadModelItem.getStatus()).execute(context, downloadModelItem, item);
+                DownloadModelItem downloadModelItem = new DownloadManagerWrapper().queryById(id);
+                DownloadStatus.getByStatus(downloadModelItem.getStatus()).execute(context, downloadModelItem,
+                        item);
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
             Intent i = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
             startActivity(i);
         }
+    }
+
+    protected Logger getLogger() {
+        return LoggerFactory.getLogger(getClass().getSimpleName());
     }
 }

@@ -2,20 +2,18 @@ package org.tint.ui.uihelpers.visitors.browser;
 
 import java.util.HashMap;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
-import android.widget.Toast;
 
 import org.tint.R;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
+import org.tint.domain.DownloadManagerWrapper;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.model.DownloadItem;
 import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
 import org.tint.utils.ApplicationUtils;
 
@@ -75,11 +73,7 @@ public class BrowserActivityContextMenuClickVisitor implements BrowserActivityCo
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
             requestHrefNode(download.getMenuItemId());
         } else {
-            DownloadItem item = new DownloadItem(url);
-            long id = ((DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(item);
-            item.setId(id);
-            Controller.getInstance().getDownloadsList().add(item);
-            Toast.makeText(context, String.format(ApplicationUtils.getStringFromResource(R.string.DownloadStart), item.getFileName()), Toast.LENGTH_SHORT).show();
+            new DownloadManagerWrapper().startDownload(url);
         }
     }
 
