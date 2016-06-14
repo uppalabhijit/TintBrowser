@@ -46,8 +46,8 @@ import org.tint.storage.TintBrowserActivityStorage;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.model.DownloadItem;
-import org.tint.ui.model.DownloadModelItem;
+import org.tint.ui.model.DownloadRequest;
+import org.tint.ui.model.DownloadResponse;
 import org.tint.ui.uihelpers.TabRestoreMode;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
 import org.tint.ui.uihelpers.browser.BrowserActivityMenuOptions;
@@ -352,11 +352,11 @@ public class TintBrowserActivity extends BaseActivity {
     private void onReceivedDownloadNotification(Context context, Intent intent) {
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            DownloadItem item = Controller.getInstance().getDownloadItemById(id);
+            DownloadRequest item = Controller.getInstance().getDownloadItemById(id);
             if (item != null) {
                 // This is one of our downloads.
-                DownloadModelItem downloadModelItem = new DownloadManagerWrapper().queryById(id);
-                DownloadStatus.getByStatus(downloadModelItem.getStatus()).execute(context, downloadModelItem,
+                DownloadResponse downloadResponse = new DownloadManagerWrapper().queryById(id);
+                DownloadStatus.getByStatus(downloadResponse.getStatus()).execute(context, downloadResponse,
                         item);
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {

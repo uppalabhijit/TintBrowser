@@ -21,7 +21,7 @@ import java.util.List;
 import org.tint.addons.AddonManager;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.model.DownloadItem;
+import org.tint.ui.model.DownloadRequest;
 
 public class Controller {
 
@@ -51,12 +51,12 @@ public class Controller {
      * Private Constructor.
      */
     private Controller() {
-        mDownloads = new ArrayList<DownloadItem>();
+        mDownloads = new ArrayList<DownloadRequest>();
     }
 
     private UIManager mUIManager;
     private TintBrowserActivity mMainActivity;
-    private List<DownloadItem> mDownloads;
+    private List<DownloadRequest> mDownloads;
 
     private AddonManager mAddonManager;
 
@@ -74,12 +74,12 @@ public class Controller {
         return mMainActivity;
     }
 
-    public List<DownloadItem> getDownloadsList() {
+    public List<DownloadRequest> getDownloadsList() {
         return mDownloads;
     }
 
-    public DownloadItem getDownloadItemById(long id) {
-        for (DownloadItem item : mDownloads) {
+    public DownloadRequest getDownloadItemById(long id) {
+        for (DownloadRequest item : mDownloads) {
             if (item.getId() == id) {
                 return item;
             }

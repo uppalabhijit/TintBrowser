@@ -19,14 +19,14 @@ import android.app.DownloadManager.Request;
 import android.net.Uri;
 import android.os.Environment;
 
-public class DownloadItem extends Request {
+public class DownloadRequest extends Request {
 	
 	private long mId;
 	private String mUrl;
 	private String mFileName;
 	private Boolean mIncognito;
 	
-	public DownloadItem(String url) {
+	public DownloadRequest(String url) {
 		super(Uri.parse(url));
 		mUrl = url;
 		mFileName = mUrl.substring(url.lastIndexOf("/") + 1);

@@ -16,7 +16,7 @@
 package org.tint.ui.dialogs;
 
 import org.tint.R;
-import org.tint.ui.model.DownloadItem;
+import org.tint.ui.model.DownloadRequest;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -32,7 +32,7 @@ public class DownloadConfirmDialog {
 	final AlertDialog.Builder mBuilder;
 	final View mView;
 	IUserActionListener mCallback;
-	DownloadItem mDownloadItem;
+	DownloadRequest mDownloadRequest;
 	
 	public DownloadConfirmDialog(Context context) {
 		mContext = context;
@@ -42,8 +42,8 @@ public class DownloadConfirmDialog {
 			.setTitle(R.string.DownloadDialogTitle);
 	}
 	
-	public DownloadConfirmDialog setDownloadItem(DownloadItem item) {
-		mDownloadItem = item;
+	public DownloadConfirmDialog setDownloadItem(DownloadRequest item) {
+		mDownloadRequest = item;
 		((TextView) mView.findViewById(R.id.DownloadOverlayDialog_FileName)).setText(item.getFileName());
 		((TextView) mView.findViewById(R.id.DownloadOverlayDialog_FileSource)).setText(item.getUrl());
 		((CheckBox) mView.findViewById(R.id.DownloadOverlayDialog_Incognito)).setChecked(item.isIncognito());
@@ -78,8 +78,8 @@ public class DownloadConfirmDialog {
 	}
 	
 	private void sendAcceptCallback() {
-		mDownloadItem.setIncognito(((CheckBox) mView.findViewById(R.id.DownloadOverlayDialog_Incognito)).isChecked());
-		mCallback.onAcceptDownload(mDownloadItem);
+		mDownloadRequest.setIncognito(((CheckBox) mView.findViewById(R.id.DownloadOverlayDialog_Incognito)).isChecked());
+		mCallback.onAcceptDownload(mDownloadRequest);
 	}
 	
 	private void sendDenyCallback() {
@@ -87,7 +87,7 @@ public class DownloadConfirmDialog {
 	}
 	
 	public static interface IUserActionListener {
-		public void onAcceptDownload(DownloadItem item);
+		public void onAcceptDownload(DownloadRequest item);
 		public void onDenyDownload();
 	}
 }

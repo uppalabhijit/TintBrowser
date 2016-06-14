@@ -45,7 +45,7 @@ import org.tint.domain.utils.UrlUtils;
 import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.model.DownloadItem;
+import org.tint.ui.model.DownloadRequest;
 import org.tint.domain.HtmlNode;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
@@ -223,7 +223,7 @@ public class CustomWebView extends WebView implements DownloadListener, Download
 
     @Override
     public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-        DownloadItem item = new DownloadItem(url);
+        DownloadRequest item = new DownloadRequest(url);
         item.addRequestHeader("Cookie", CookieManager.getInstance().getCookie(url));
 
         String fileName = item.getFileName();
@@ -248,7 +248,7 @@ public class CustomWebView extends WebView implements DownloadListener, Download
     }
 
     @Override
-    public void onAcceptDownload(DownloadItem item) {
+    public void onAcceptDownload(DownloadRequest item) {
         long id = ((DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(item);
         item.setId(id);
 

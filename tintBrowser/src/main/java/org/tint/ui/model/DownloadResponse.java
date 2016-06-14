@@ -4,12 +4,12 @@ package org.tint.ui.model;
  * User: Abhijit
  * Date: 2016-06-12
  */
-public class DownloadModelItem {
+public class DownloadResponse {
     private final int status;
     private final int failureReason;
     private final String localUri;
 
-    public DownloadModelItem(int status, int failureReason, String localUri) {
+    public DownloadResponse(int status, int failureReason, String localUri) {
         this.status = status;
         this.failureReason = failureReason;
         this.localUri = localUri;

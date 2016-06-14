@@ -6,8 +6,8 @@ import android.widget.Toast;
 
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.ui.model.DownloadItem;
-import org.tint.ui.model.DownloadModelItem;
+import org.tint.ui.model.DownloadRequest;
+import org.tint.ui.model.DownloadResponse;
 import org.tint.utils.NotificationUtils;
 
 /**
@@ -16,16 +16,16 @@ import org.tint.utils.NotificationUtils;
 public enum DownloadStatus {
     SUCCESSFUL(DownloadManager.STATUS_SUCCESSFUL) {
         @Override
-        public void execute(Context context, DownloadModelItem downloadModelItem, DownloadItem downloadItem) {
-            String localUri = downloadModelItem.getLocalUri();
+        public void execute(Context context, DownloadResponse downloadResponse, DownloadRequest downloadRequest) {
+            String localUri = downloadResponse.getLocalUri();
             Toast.makeText(context, String.format(context.getString(R.string.DownloadComplete), localUri), Toast.LENGTH_SHORT).show();
-            Controller.getInstance().getDownloadsList().remove(downloadItem);
-            NotificationUtils.showDownloadCompleteNotification(context, context.getString(R.string.DownloadComplete), downloadItem.getFileName(), context.getString(R.string.DownloadComplete));
+            Controller.getInstance().getDownloadsList().remove(downloadRequest);
+            NotificationUtils.showDownloadCompleteNotification(context, context.getString(R.string.DownloadComplete), downloadRequest.getFileName(), context.getString(R.string.DownloadComplete));
         }
     }, FAILED(DownloadManager.STATUS_FAILED) {
         @Override
-        public void execute(Context context, DownloadModelItem downloadModelItem, DownloadItem downloadItem) {
-            int reason = downloadModelItem.getFailureReason();
+        public void execute(Context context, DownloadResponse downloadResponse, DownloadRequest downloadRequest) {
+            int reason = downloadResponse.getFailureReason();
             String message;
             switch (reason) {
                 case DownloadManager.ERROR_FILE_ERROR:
@@ -46,7 +46,7 @@ public enum DownloadStatus {
             }
 
             Toast.makeText(context, String.format(context.getString(R.string.DownloadFailedWithErrorMessage), message), Toast.LENGTH_SHORT).show();
-            Controller.getInstance().getDownloadsList().remove(downloadItem);
+            Controller.getInstance().getDownloadsList().remove(downloadRequest);
         }
     };
 
@@ -65,5 +65,5 @@ public enum DownloadStatus {
         return FAILED;
     }
 
-    public abstract void execute(Context context, DownloadModelItem downloadModelItem, DownloadItem downloadItem);
+    public abstract void execute(Context context, DownloadResponse downloadResponse, DownloadRequest downloadRequest);
 }

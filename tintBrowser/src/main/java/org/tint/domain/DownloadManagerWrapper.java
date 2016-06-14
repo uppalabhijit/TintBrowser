@@ -10,8 +10,8 @@ import org.tint.R;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
 import org.tint.storage.CursorManager;
-import org.tint.ui.model.DownloadItem;
-import org.tint.ui.model.DownloadModelItem;
+import org.tint.ui.model.DownloadRequest;
+import org.tint.ui.model.DownloadResponse;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Function;
 
@@ -22,22 +22,22 @@ import org.tint.utils.Function;
 public class DownloadManagerWrapper {
     public void startDownload(String url) {
         Context context = ContextRegistry.get();
-        DownloadItem item = new DownloadItem(url);
+        DownloadRequest item = new DownloadRequest(url);
         long id = ((DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(item);
         item.setId(id);
         Controller.getInstance().getDownloadsList().add(item);
         Toast.makeText(context, String.format(ApplicationUtils.getStringFromResource(R.string.DownloadStart), item.getFileName()), Toast.LENGTH_SHORT).show();
     }
 
-    public DownloadModelItem queryById(long id) {
+    public DownloadResponse queryById(long id) {
         final DownloadManager downloadManager = (DownloadManager) ContextRegistry.get().getSystemService(Context.DOWNLOAD_SERVICE);
         Query query = new Query();
         query.setFilterById(id);
         Cursor cursor = downloadManager.query(query);
 
-        CursorManager.SingleItemCursor<DownloadModelItem> integerSingleItemCursor = new CursorManager.SingleItemCursor<DownloadModelItem>(new Function<Cursor, DownloadModelItem>() {
+        CursorManager.SingleItemCursor<DownloadResponse> integerSingleItemCursor = new CursorManager.SingleItemCursor<DownloadResponse>(new Function<Cursor, DownloadResponse>() {
             @Override
-            public DownloadModelItem apply(Cursor cursor) {
+            public DownloadResponse apply(Cursor cursor) {
                 int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 int status = cursor.getInt(statusIndex);
 
@@ -46,11 +46,11 @@ public class DownloadManagerWrapper {
 
                 int reasonIndex = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
                 int reason = cursor.getInt(reasonIndex);
-                return new DownloadModelItem(status, reason, localUri);
+                return new DownloadResponse(status, reason, localUri);
             }
         });
-        DownloadModelItem downloadModelItem = integerSingleItemCursor.query(cursor);
-        return downloadModelItem;
+        DownloadResponse downloadResponse = integerSingleItemCursor.query(cursor);
+        return downloadResponse;
     }
 
 }
