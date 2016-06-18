@@ -27,10 +27,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Toast;
 
 import org.tint.R;
@@ -237,5 +240,14 @@ public class ApplicationUtils {
 
     public static String getStringFromResource(int resId) {
         return ContextRegistry.get().getString(resId);
+    }
+
+    public static Bitmap getBitmpaFromResource(int resId) {
+        return BitmapFactory.decodeResource(ContextRegistry.get().getResources(), resId);
+    }
+
+    public static View inflateView(int layoutId) {
+        LayoutInflater layoutInflater = (LayoutInflater) ContextRegistry.get().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        return layoutInflater.inflate(layoutId, null);
     }
 }

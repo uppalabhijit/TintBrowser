@@ -12,37 +12,32 @@ import android.widget.TextView;
 
 import org.tint.R;
 import org.tint.ui.managers.UIManager;
+import org.tint.utils.Callback;
 
 /**
  * User: Abhijit
  * Date: 2016-06-13
  */
-public class JsPromptsManager implements IJsPromptsManager {
+class JsPromptsManager implements IJsPromptsManager {
     private final UIManager mUIManager;
 
-    public JsPromptsManager(UIManager mUIManager) {
+    JsPromptsManager(UIManager mUIManager) {
         this.mUIManager = mUIManager;
     }
 
     @Override
     public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
-        new AlertDialog.Builder(mUIManager.getMainActivity())
-                .setTitle(R.string.JavaScriptConfirmDialog)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
-                            }
-                        })
-                .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.cancel();
-                            }
-                        })
-                .create()
-                .show();
+        showAlertDialog(R.string.JavaScriptConfirmDialog, message, new Callback() {
+            @Override
+            public void execute() {
+                result.confirm();
+            }
+        }, new Callback() {
+            @Override
+            public void execute() {
+                result.cancel();
+            }
+        });
         return true;
     }
 
@@ -82,18 +77,43 @@ public class JsPromptsManager implements IJsPromptsManager {
 
     @Override
     public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+        showAlertDialog(R.string.JavaScriptAlertDialog, message, new Callback() {
+            @Override
+            public void execute() {
+                result.confirm();
+            }
+        }, new Callback() {
+            @Override
+            public void execute() {
+                result.cancel();
+            }
+        });
+        return true;
+    }
+
+    private void showAlertDialog(int titleId, String message, final Callback okCallback, final Callback cancelCallback) {
         new AlertDialog.Builder(mUIManager.getMainActivity())
-                .setTitle(R.string.JavaScriptAlertDialog)
+                .setTitle(titleId)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok,
-                        new AlertDialog.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
-                            }
-                        })
-                .setCancelable(false)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        okCallback.execute();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        cancelCallback.execute();
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        cancelCallback.execute();
+                    }
+                })
                 .create()
                 .show();
-        return true;
     }
 }

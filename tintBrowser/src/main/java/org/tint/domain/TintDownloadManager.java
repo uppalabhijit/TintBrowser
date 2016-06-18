@@ -3,6 +3,7 @@ package org.tint.domain;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.widget.Toast;
 
@@ -19,7 +20,8 @@ import org.tint.utils.Function;
  * User: Abhijit
  * Date: 2016-06-13
  */
-public class DownloadManagerWrapper {
+public class TintDownloadManager {
+
     public void startDownload(String url) {
         Context context = ContextRegistry.get();
         DownloadRequest item = new DownloadRequest(url);
@@ -53,4 +55,9 @@ public class DownloadManagerWrapper {
         return downloadResponse;
     }
 
+    public void showDownloads() {
+        Intent intent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ContextRegistry.get().startActivity(intent);
+    }
 }

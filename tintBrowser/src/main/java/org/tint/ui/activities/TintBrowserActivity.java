@@ -38,8 +38,8 @@ import org.tint.R;
 import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
-import org.tint.domain.DownloadManagerWrapper;
 import org.tint.domain.DownloadStatus;
+import org.tint.domain.TintDownloadManager;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.storage.CommonPrefsStorage;
 import org.tint.storage.TintBrowserActivityStorage;
@@ -350,18 +350,18 @@ public class TintBrowserActivity extends BaseActivity {
     }
 
     private void onReceivedDownloadNotification(Context context, Intent intent) {
+        TintDownloadManager tintDownloadManager = new TintDownloadManager();
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             DownloadRequest item = Controller.getInstance().getDownloadItemById(id);
             if (item != null) {
                 // This is one of our downloads.
-                DownloadResponse downloadResponse = new DownloadManagerWrapper().queryById(id);
+                DownloadResponse downloadResponse = tintDownloadManager.queryById(id);
                 DownloadStatus.getByStatus(downloadResponse.getStatus()).execute(context, downloadResponse,
                         item);
             }
         } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
-            Intent i = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-            startActivity(i);
+            tintDownloadManager.showDownloads();
         }
     }
 

@@ -12,7 +12,7 @@ import android.webkit.WebView.HitTestResult;
 import org.tint.R;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
-import org.tint.domain.DownloadManagerWrapper;
+import org.tint.domain.TintDownloadManager;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
 import org.tint.utils.ApplicationUtils;
@@ -73,7 +73,7 @@ public class BrowserActivityContextMenuClickVisitor implements BrowserActivityCo
         if (HitTestResult.SRC_IMAGE_ANCHOR_TYPE == intExtraHitResult) {
             requestHrefNode(download.getMenuItemId());
         } else {
-            new DownloadManagerWrapper().startDownload(url);
+            new TintDownloadManager().startDownload(url);
         }
     }
 
