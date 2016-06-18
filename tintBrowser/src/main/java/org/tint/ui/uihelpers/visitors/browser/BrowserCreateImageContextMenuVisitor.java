@@ -12,7 +12,7 @@ import org.tint.utils.Constants;
  * User: Abhijit
  * Date: 2016-06-12
  */
-public class BrowserCreateImageContextMenuVisitor extends NoopBrowserContextMenuVisitor {
+public class BrowserCreateImageContextMenuVisitor extends NoopCreateHtmlNodeContextMenuVisitor {
     private final Menu menu;
     private final WebView.HitTestResult result;
     private final int resultType;

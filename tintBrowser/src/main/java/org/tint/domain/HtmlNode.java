@@ -4,10 +4,7 @@ import android.view.ContextMenu;
 import android.webkit.WebView.HitTestResult;
 
 import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
-import org.tint.ui.uihelpers.visitors.browser.BrowserCreateAnchorContextMenuVisitor;
-import org.tint.ui.uihelpers.visitors.browser.BrowserCreateEmailContextMenuVisitor;
-import org.tint.ui.uihelpers.visitors.browser.BrowserCreateImageContextMenuVisitor;
-import org.tint.ui.uihelpers.visitors.browser.NoopBrowserContextMenuVisitor;
+import org.tint.ui.uihelpers.visitors.browser.*;
 import org.tint.utils.Predicate;
 
 /**
@@ -38,7 +35,7 @@ public enum HtmlNode {
         }
 
         @Override
-        protected NoopBrowserContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
+        protected NoopCreateHtmlNodeContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
             return new BrowserCreateAnchorContextMenuVisitor(contextMenu, result, isPrivateBrowsingEnabled);
         }
     }, IMAGE(new Predicate<Integer>() {
@@ -58,7 +55,7 @@ public enum HtmlNode {
         }
 
         @Override
-        protected NoopBrowserContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
+        protected NoopCreateHtmlNodeContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
             return new BrowserCreateImageContextMenuVisitor(contextMenu, result, isPrivateBrowsingEnabled);
         }
 
@@ -77,7 +74,7 @@ public enum HtmlNode {
         }
 
         @Override
-        protected NoopBrowserContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
+        protected NoopCreateHtmlNodeContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
             return new BrowserCreateEmailContextMenuVisitor(contextMenu, result, isPrivateBrowsingEnabled);
         }
 
@@ -93,8 +90,8 @@ public enum HtmlNode {
         }
 
         @Override
-        protected NoopBrowserContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
-            return new NoopBrowserContextMenuVisitor();
+        protected NoopCreateHtmlNodeContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled) {
+            return new NoopCreateHtmlNodeContextMenuVisitor();
         }
     };
     private final Predicate<Integer> predicate;
@@ -114,11 +111,11 @@ public enum HtmlNode {
 
     protected abstract BrowserActivityContextMenuOptions[] getContextMenuOptions();
 
-    protected abstract NoopBrowserContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled);
+    protected abstract NoopCreateHtmlNodeContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled);
 
     public final void execute(ContextMenu contextMenu, String parentFragmentUUid, HitTestResult result, boolean
             isPrivateBrowsingEnabled) {
-        NoopBrowserContextMenuVisitor browserCreateAnchorContextMenuVisitor = createVisitor(contextMenu, result, isPrivateBrowsingEnabled);
+        NoopCreateHtmlNodeContextMenuVisitor browserCreateAnchorContextMenuVisitor = createVisitor(contextMenu, result, isPrivateBrowsingEnabled);
         for (BrowserActivityContextMenuOptions browserActivityContextMenuOptions : getContextMenuOptions()) {
             browserActivityContextMenuOptions.accept(browserCreateAnchorContextMenuVisitor);
         }

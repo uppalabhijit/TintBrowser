@@ -59,23 +59,4 @@ public class NoopBrowserContextMenuVisitor implements BrowserActivityContextMenu
         result.putExtra(Constants.EXTRA_INCOGNITO, mPrivateBrowsing);
         return result;
     }
-
-    public void createContributedContextMenu(ContextMenu menu, String parentFragmentUUID, int hitTestResult, String url, boolean
-            mPrivateBrowsing) {
-        if (!mPrivateBrowsing) {
-            MenuItem item;
-
-            List<AddonMenuItem> contributedItems = Controller.getInstance().getAddonManager().getContributedLinkContextMenuItems(parentFragmentUUID,
-                    hitTestResult, url);
-            for (AddonMenuItem contribution : contributedItems) {
-                item = menu.add(0, contribution.getAddon().getMenuId(), 0, contribution.getMenuItem());
-                item.setIntent(createIntent(Constants.ACTION_BROWSER_CONTEXT_MENU, contribution.getAddon().getMenuId(), hitTestResult,
-                        url, mPrivateBrowsing));
-            }
-        }
-    }
-
-    public void setHeaderTitle(ContextMenu contextMenu, String resultExtra) {
-        contextMenu.setHeaderTitle(resultExtra);
-    }
 }
