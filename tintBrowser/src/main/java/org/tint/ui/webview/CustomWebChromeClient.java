@@ -18,20 +18,21 @@ package org.tint.ui.webview;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.*;
 import android.webkit.GeolocationPermissions.Callback;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tint.R;
 import org.tint.tasks.UpdateFaviconTask;
 import org.tint.tasks.UpdateHistoryTask;
 import org.tint.ui.managers.UIManager;
+import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
 public class CustomWebChromeClient extends WebChromeClient {
@@ -108,7 +109,7 @@ public class CustomWebChromeClient extends WebChromeClient {
     @Override
     public Bitmap getDefaultVideoPoster() {
         if (mDefaultVideoPoster == null) {
-            mDefaultVideoPoster = BitmapFactory.decodeResource(mUIManager.getMainActivity().getResources(), R.drawable.default_video_poster);
+            mDefaultVideoPoster = ApplicationUtils.getBitmpaFromResource(R.drawable.default_video_poster);
         }
         return mDefaultVideoPoster;
     }
@@ -116,10 +117,8 @@ public class CustomWebChromeClient extends WebChromeClient {
     @Override
     public View getVideoLoadingProgressView() {
         if (mVideoProgressView == null) {
-            LayoutInflater inflater = LayoutInflater.from(mUIManager.getMainActivity());
-            mVideoProgressView = inflater.inflate(R.layout.video_loading_progress, null);
+            mVideoProgressView = ApplicationUtils.inflateView(R.layout.video_loading_progress);
         }
-
         return mVideoProgressView;
     }
 
@@ -172,5 +171,8 @@ public class CustomWebChromeClient extends WebChromeClient {
             Log.d("TintJS", cm.sourceId() + ":" + cm.lineNumber() + " " + cm.message());
         }
         return true;
+    }
+    private Logger getLogger() {
+        return LoggerFactory.getLogger(getClass());
     }
 }
