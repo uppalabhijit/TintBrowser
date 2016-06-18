@@ -13,13 +13,12 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.webview;
+package org.tint.domain.web;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;

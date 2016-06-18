@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.webview;
+package org.tint.domain.web;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -50,6 +50,7 @@ import android.widget.Toast;
 import org.tint.R;
 import org.tint.providers.SslExceptionsWrapper;
 import org.tint.ui.managers.UIManager;
+import org.tint.ui.webview.CustomWebView;
 
 public class CustomWebViewClient extends WebViewClient {
 

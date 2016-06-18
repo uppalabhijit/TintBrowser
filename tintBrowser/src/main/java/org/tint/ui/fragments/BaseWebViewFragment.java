@@ -17,9 +17,9 @@ package org.tint.ui.fragments;
 
 import java.util.UUID;
 
-import org.tint.ui.webview.CustomWebChromeClient;
+import org.tint.domain.web.CustomWebChromeClient;
 import org.tint.ui.webview.CustomWebView;
-import org.tint.ui.webview.CustomWebViewClient;
+import org.tint.domain.web.CustomWebViewClient;
 import org.tint.ui.managers.UIManager;
 import org.tint.utils.Constants;
 

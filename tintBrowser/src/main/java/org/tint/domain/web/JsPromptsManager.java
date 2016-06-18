@@ -1,4 +1,4 @@
-package org.tint.ui.webview;
+package org.tint.domain.web;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

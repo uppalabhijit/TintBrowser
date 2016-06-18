@@ -1,4 +1,4 @@
-package org.tint.ui.webview;
+package org.tint.domain.web;
 
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
