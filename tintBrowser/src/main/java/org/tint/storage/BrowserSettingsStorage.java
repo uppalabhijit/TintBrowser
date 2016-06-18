@@ -14,4 +14,8 @@ public class BrowserSettingsStorage extends BasePrefsStorage {
     public void setHomePageUrlUpdateNeeded(boolean urlUpdateNeeded) {
         sharedPrefsStorage.setBoolean(Constants.TECHNICAL_PREFERENCE_HOMEPAGE_URL_UPDATE_NEEDED, urlUpdateNeeded);
     }
+
+    public boolean isJSLogsToConsoleEnabled() {
+        return sharedPrefsStorage.getBoolean(Constants.PREFERENCE_JS_LOG_ON_LOGCAT, false);
+    }
 }

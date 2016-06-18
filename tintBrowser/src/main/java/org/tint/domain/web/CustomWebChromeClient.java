@@ -16,10 +16,8 @@
 package org.tint.domain.web;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.*;
@@ -28,6 +26,7 @@ import android.webkit.GeolocationPermissions.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tint.R;
+import org.tint.storage.BrowserSettingsStorage;
 import org.tint.tasks.UpdateFaviconTask;
 import org.tint.tasks.UpdateHistoryTask;
 import org.tint.ui.managers.UIManager;
@@ -40,12 +39,9 @@ public class CustomWebChromeClient extends WebChromeClient {
 
     private Bitmap mDefaultVideoPoster = null;
     private View mVideoProgressView = null;
-    private SharedPreferences mPreferences = null;
 
     public CustomWebChromeClient(UIManager uiManager) {
         mUIManager = uiManager;
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(mUIManager.
-                getMainActivity().getApplicationContext());
     }
 
     @Override
@@ -162,11 +158,12 @@ public class CustomWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onConsoleMessage(ConsoleMessage cm) {
-        if (mPreferences.getBoolean(Constants.PREFERENCE_JS_LOG_ON_LOGCAT, false)) {
+        if (new BrowserSettingsStorage().isJSLogsToConsoleEnabled()) {
             Log.d("TintJS", cm.sourceId() + ":" + cm.lineNumber() + " " + cm.message());
         }
         return true;
     }
+
     private Logger getLogger() {
         return LoggerFactory.getLogger(getClass());
     }
