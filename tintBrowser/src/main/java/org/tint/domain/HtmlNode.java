@@ -27,7 +27,7 @@ public enum HtmlNode {
         }
     }) {
         @Override
-        protected BrowserActivityContextMenuOptions[] getOptions() {
+        protected BrowserActivityContextMenuOptions[] getContextMenuOptions() {
             return new BrowserActivityContextMenuOptions[]{BrowserActivityContextMenuOptions.OPEN,
                     BrowserActivityContextMenuOptions.OPEN_IN_NEW_TAB,
                     BrowserActivityContextMenuOptions.OPEN_IN_BACKGROUND,
@@ -48,7 +48,7 @@ public enum HtmlNode {
         }
     }) {
         @Override
-        protected BrowserActivityContextMenuOptions[] getOptions() {
+        protected BrowserActivityContextMenuOptions[] getContextMenuOptions() {
             return new BrowserActivityContextMenuOptions[]{BrowserActivityContextMenuOptions.OPEN,
                     BrowserActivityContextMenuOptions.OPEN_IN_NEW_TAB,
                     BrowserActivityContextMenuOptions.COPY,
@@ -69,7 +69,7 @@ public enum HtmlNode {
         }
     }) {
         @Override
-        protected BrowserActivityContextMenuOptions[] getOptions() {
+        protected BrowserActivityContextMenuOptions[] getContextMenuOptions() {
             return new BrowserActivityContextMenuOptions[]{BrowserActivityContextMenuOptions.SEND_MAIL,
                     BrowserActivityContextMenuOptions.COPY,
                     BrowserActivityContextMenuOptions.SHARE
@@ -88,7 +88,7 @@ public enum HtmlNode {
         }
     }) {
         @Override
-        protected BrowserActivityContextMenuOptions[] getOptions() {
+        protected BrowserActivityContextMenuOptions[] getContextMenuOptions() {
             return new BrowserActivityContextMenuOptions[0];
         }
 
@@ -112,14 +112,14 @@ public enum HtmlNode {
         return DEFAULT;
     }
 
-    protected abstract BrowserActivityContextMenuOptions[] getOptions();
+    protected abstract BrowserActivityContextMenuOptions[] getContextMenuOptions();
 
     protected abstract NoopBrowserContextMenuVisitor createVisitor(ContextMenu contextMenu, HitTestResult result, boolean isPrivateBrowsingEnabled);
 
     public final void execute(ContextMenu contextMenu, String parentFragmentUUid, HitTestResult result, boolean
             isPrivateBrowsingEnabled) {
         NoopBrowserContextMenuVisitor browserCreateAnchorContextMenuVisitor = createVisitor(contextMenu, result, isPrivateBrowsingEnabled);
-        for (BrowserActivityContextMenuOptions browserActivityContextMenuOptions : getOptions()) {
+        for (BrowserActivityContextMenuOptions browserActivityContextMenuOptions : getContextMenuOptions()) {
             browserActivityContextMenuOptions.accept(browserCreateAnchorContextMenuVisitor);
         }
         browserCreateAnchorContextMenuVisitor.createContributedContextMenu(contextMenu, parentFragmentUUid, result.getType(), result.getExtra(),
