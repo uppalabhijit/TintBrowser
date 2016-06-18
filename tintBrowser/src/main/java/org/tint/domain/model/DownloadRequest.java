@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.ui.model;
+package org.tint.domain.model;
 
 import android.app.DownloadManager.Request;
 import android.net.Uri;

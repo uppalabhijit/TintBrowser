@@ -2,11 +2,14 @@ package org.tint.ui.uihelpers.visitors.browser;
 
 import java.util.List;
 
+import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 
 import org.tint.addons.AddonMenuItem;
+import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
+import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.utils.Constants;
 
 /**
@@ -32,5 +35,15 @@ public class NoopCreateHtmlNodeContextMenuVisitor extends NoopBrowserContextMenu
 
     public void setHeaderTitle(ContextMenu contextMenu, String resultExtra) {
         contextMenu.setHeaderTitle(resultExtra);
+    }
+
+    protected final Intent createIntent(String action, int actionId, int hitTestResult, String url, boolean mPrivateBrowsing) {
+        Intent result = new Intent(ContextRegistry.get(), TintBrowserActivity.class);
+        result.setAction(action);
+        result.putExtra(Constants.EXTRA_ACTION_ID, actionId);
+        result.putExtra(Constants.EXTRA_HIT_TEST_RESULT, hitTestResult);
+        result.putExtra(Constants.EXTRA_URL, url);
+        result.putExtra(Constants.EXTRA_INCOGNITO, mPrivateBrowsing);
+        return result;
     }
 }

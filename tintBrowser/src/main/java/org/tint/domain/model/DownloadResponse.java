@@ -1,4 +1,4 @@
-package org.tint.ui.model;
+package org.tint.domain.model;
 
 /**
  * User: Abhijit

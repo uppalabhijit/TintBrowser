@@ -21,7 +21,7 @@ import java.util.List;
 import org.tint.addons.AddonManager;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.model.DownloadRequest;
+import org.tint.domain.model.DownloadRequest;
 
 public class Controller {
 

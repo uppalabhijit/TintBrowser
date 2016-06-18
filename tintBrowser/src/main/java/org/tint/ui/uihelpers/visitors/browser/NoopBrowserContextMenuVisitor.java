@@ -49,14 +49,4 @@ public class NoopBrowserContextMenuVisitor implements BrowserActivityContextMenu
     @Override
     public void visitDefault(BrowserActivityContextMenuOptions defaultOption) {
     }
-
-    protected final Intent createIntent(String action, int actionId, int hitTestResult, String url, boolean mPrivateBrowsing) {
-        Intent result = new Intent(ContextRegistry.get(), TintBrowserActivity.class);
-        result.setAction(action);
-        result.putExtra(Constants.EXTRA_ACTION_ID, actionId);
-        result.putExtra(Constants.EXTRA_HIT_TEST_RESULT, hitTestResult);
-        result.putExtra(Constants.EXTRA_URL, url);
-        result.putExtra(Constants.EXTRA_INCOGNITO, mPrivateBrowsing);
-        return result;
-    }
 }

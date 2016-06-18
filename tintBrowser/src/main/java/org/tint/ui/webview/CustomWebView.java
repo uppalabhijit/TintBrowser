@@ -49,7 +49,7 @@ import org.tint.domain.utils.UrlUtils;
 import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.model.DownloadRequest;
+import org.tint.domain.model.DownloadRequest;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 

@@ -6,8 +6,8 @@ import android.widget.Toast;
 
 import org.tint.R;
 import org.tint.controllers.Controller;
-import org.tint.ui.model.DownloadRequest;
-import org.tint.ui.model.DownloadResponse;
+import org.tint.domain.model.DownloadRequest;
+import org.tint.domain.model.DownloadResponse;
 import org.tint.utils.NotificationUtils;
 
 /**
