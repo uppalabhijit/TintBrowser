@@ -79,7 +79,9 @@ public class CustomWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         mUIManager.onPageFinished(view, url);
-        ((CustomWebView) view).onClientPageFinished(url);
+        CustomWebView customWebView = (CustomWebView) view;
+        customWebView.onClientPageFinished(url);
+        customWebView.maintainScrollPositionIfUserHasScrolled();
     }
 
     @Override

@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebSettings;
@@ -39,18 +40,20 @@ import android.widget.Toast;
 import org.apache.http.HeaderElement;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tint.R;
 import org.tint.controllers.Controller;
+import org.tint.domain.HtmlNode;
 import org.tint.domain.utils.UrlUtils;
 import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.model.DownloadRequest;
-import org.tint.domain.HtmlNode;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
-public class CustomWebView extends WebView implements DownloadListener, DownloadConfirmDialog.IUserActionListener {
+public class CustomWebView extends WebView implements DownloadListener, DownloadConfirmDialog.IUserActionListener, ViewTreeObserver.OnScrollChangedListener {
 
     private UIManager mUIManager;
     private Context mContext;
@@ -61,6 +64,8 @@ public class CustomWebView extends WebView implements DownloadListener, Download
 
     private static boolean sMethodsLoaded = false;
     private static Method sWebSettingsSetProperty = null;
+    private int scrollX = 0;
+    private int scrollY = 0;
 
     public CustomWebView(UIManager uiManager, boolean privateBrowsing) {
         this(uiManager.getMainActivity(), null, privateBrowsing);
@@ -88,6 +93,7 @@ public class CustomWebView extends WebView implements DownloadListener, Download
             loadSettings();
             setupContextMenu();
         }
+        getViewTreeObserver().addOnScrollChangedListener(this);
     }
 
     public void setParentFragment(BaseWebViewFragment parentFragment) {
@@ -312,4 +318,25 @@ public class CustomWebView extends WebView implements DownloadListener, Download
         }
     }
 
+    @Override
+    public void onScrollChanged() {
+        scrollX = getScrollX();
+        scrollY = getScrollY();
+        getLogger().debug(String.format("[CustomWebView][onScrollChanged] scrollX = %s, scrollY = %s", scrollX, scrollY));
+    }
+
+    public void maintainScrollPositionIfUserHasScrolled() {
+        final int scrollX = this.scrollX;
+        final int scrollY = this.scrollY;
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scrollTo(scrollX, scrollY);
+            }
+        }, 500);
+    }
+
+    private Logger getLogger() {
+        return LoggerFactory.getLogger(getClass());
+    }
 }

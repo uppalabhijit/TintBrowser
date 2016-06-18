@@ -72,19 +72,15 @@ public class CustomWebChromeClient extends WebChromeClient {
         task.execute();
     }
 
-    @Override
-    public boolean onCreateWindow(WebView view, final boolean dialog, final boolean userGesture, final Message resultMsg) {
-        WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-
-        CustomWebView curentWebView = mUIManager.getCurrentWebView();
-
-        mUIManager.addTab(false, curentWebView.isPrivateBrowsingEnabled());
-
-        transport.setWebView(mUIManager.getCurrentWebView());
-        resultMsg.sendToTarget();
-
-        return true;
-    }
+//    @Override
+//    public boolean onCreateWindow(WebView view, final boolean dialog, final boolean userGesture, final Message resultMsg) {
+//        WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+//        CustomWebView curentWebView = mUIManager.getCurrentWebView();
+//        mUIManager.addTab(false, curentWebView.isPrivateBrowsingEnabled());
+//        transport.setWebView(mUIManager.getCurrentWebView());
+//        resultMsg.sendToTarget();
+//        return true;
+//    }
 
     public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
         mUIManager.setUploadMessage(uploadMsg);
