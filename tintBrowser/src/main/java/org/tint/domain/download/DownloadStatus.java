@@ -1,4 +1,4 @@
-package org.tint.domain;
+package org.tint.domain.download;
 
 import android.app.DownloadManager;
 import android.content.Context;

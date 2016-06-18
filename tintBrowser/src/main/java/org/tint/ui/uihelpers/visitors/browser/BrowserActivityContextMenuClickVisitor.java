@@ -12,7 +12,7 @@ import android.webkit.WebView.HitTestResult;
 import org.tint.R;
 import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
-import org.tint.domain.TintDownloadManager;
+import org.tint.domain.download.TintDownloadManager;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.uihelpers.browser.BrowserActivityContextMenuOptions;
 import org.tint.utils.ApplicationUtils;
