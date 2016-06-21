@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class PanelLayout extends RelativeLayout {
@@ -50,7 +51,7 @@ public class PanelLayout extends RelativeLayout {
 	private AnimatorListener mShowListener;
 	private AnimatorListener mHideListener;
 
-	private RelativeLayout mContent;
+	private LinearLayout mContent;
 	private RelativeLayout mPanel;
 	
 	private TabsScroller mTabsScroller;
@@ -104,7 +105,7 @@ public class PanelLayout extends RelativeLayout {
 			LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View v = layoutInflater.inflate(R.layout.panel_layout, this);
 
-			mContent = (RelativeLayout) v.findViewById(R.id.main_content);
+			mContent = (LinearLayout) v.findViewById(R.id.main_content);
 			mPanel = (RelativeLayout) v.findViewById(R.id.panel);
 
 			mTabsScroller = (TabsScroller) v.findViewById(R.id.tabs_scroller);

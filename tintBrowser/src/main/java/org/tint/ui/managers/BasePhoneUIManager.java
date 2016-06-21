@@ -37,8 +37,8 @@ import android.content.SharedPreferences;
 import android.view.ActionMode;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 public abstract class BasePhoneUIManager extends BaseUIManager {
 
@@ -56,7 +56,7 @@ public abstract class BasePhoneUIManager extends BaseUIManager {
 	
 	protected ProgressBar mProgressBar;
 	
-	protected RelativeLayout mTopBar;
+	protected LinearLayout mTopBar;
 	
 	protected ImageView mBack;
 	protected ImageView mForward;

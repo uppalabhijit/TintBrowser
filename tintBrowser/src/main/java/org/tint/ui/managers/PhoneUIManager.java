@@ -26,10 +26,7 @@ import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+import android.widget.*;
 
 import org.tint.R;
 import org.tint.ui.activities.TintBrowserActivity;
@@ -193,7 +190,7 @@ public class PhoneUIManager extends BasePhoneUIManager {
             }
         });
 
-        mTopBar = (RelativeLayout) mActivity.findViewById(R.id.TopBar);
+        mTopBar = (LinearLayout) mActivity.findViewById(R.id.TopBar);
         mTopBar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {

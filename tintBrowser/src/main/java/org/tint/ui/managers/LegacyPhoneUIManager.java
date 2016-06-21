@@ -30,7 +30,6 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import org.tint.R;
 import org.tint.ui.activities.TintBrowserActivity;
@@ -178,7 +177,7 @@ public class LegacyPhoneUIManager extends BasePhoneUIManager {
         
         mFaviconView.setImageDrawable(mDefaultFavicon);
         
-		mTopBar = (RelativeLayout) mActivity.findViewById(R.id.TopBar);
+		mTopBar = (LinearLayout) mActivity.findViewById(R.id.TopBar);
 		mTopBar.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
