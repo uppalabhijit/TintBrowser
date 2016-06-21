@@ -20,14 +20,72 @@ import android.preference.PreferenceManager;
 
 import org.tint.R;
 import org.tint.ui.activities.TintBrowserActivity;
+import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
 public class UIFactory {
 
     public enum UIType {
-        TABLET,
-        PHONE,
-        LEGACY_PHONE
+        TABLET("TABLET") {
+            @Override
+            protected int getMainLayout() {
+                return R.layout.tablet_main_activity;
+            }
+
+            @Override
+            protected int getMainMenuLayout() {
+                return R.menu.main_activity_menu_tablet;
+            }
+
+            @Override
+            protected UIManager createUIManager(TintBrowserActivity activity) {
+                return new TabletUIManager(activity);
+            }
+        },
+        PHONE("PHONE") {
+            @Override
+            protected int getMainLayout() {
+                return R.layout.phone_main_activity;
+            }
+
+            @Override
+            protected UIManager createUIManager(TintBrowserActivity activity) {
+                return new PhoneUIManager(activity);
+            }
+        },
+        LEGACY_PHONE("LEGACY_PHONE") {
+            @Override
+            protected int getMainLayout() {
+                return R.layout.legacy_phone_main_activity;
+            }
+
+            @Override
+            protected UIManager createUIManager(TintBrowserActivity activity) {
+                return new LegacyPhoneUIManager(activity);
+            }
+        };
+        private final String name;
+
+        private UIType(String name) {
+            this.name = name;
+        }
+
+        protected abstract int getMainLayout();
+
+        protected abstract UIManager createUIManager(TintBrowserActivity activity);
+
+        protected int getMainMenuLayout() {
+            return R.menu.main_activity_menu;
+        }
+
+        private static UIType getFromName(String name) {
+            for (UIType uiType : values()) {
+                if (uiType.name.equals(name)) {
+                    return uiType;
+                }
+            }
+            return PHONE;
+        }
     }
 
     private static boolean isInitialized = false;
@@ -50,74 +108,34 @@ public class UIFactory {
 
     public static int getMainLayout(Context context) {
         checkInit(context);
-
-        switch (sUIType) {
-            case TABLET:
-                return R.layout.tablet_main_activity;
-
-            case PHONE:
-                return R.layout.phone_main_activity;
-
-            case LEGACY_PHONE:
-                return R.layout.legacy_phone_main_activity;
-
-            default:
-                return R.layout.phone_main_activity;
-        }
+        return sUIType.getMainLayout();
     }
 
     public static int getMainMenuLayout(Context context) {
         checkInit(context);
-
-        switch (sUIType) {
-            case TABLET:
-                return R.menu.main_activity_menu_tablet;
-
-            case PHONE:
-            case LEGACY_PHONE:
-                return R.menu.main_activity_menu;
-
-            default:
-                return R.menu.main_activity_menu;
-        }
+        return sUIType.getMainMenuLayout();
     }
 
     public static UIManager createUIManager(TintBrowserActivity activity) {
         checkInit(activity);
-
-        switch (sUIType) {
-            case TABLET:
-                return new TabletUIManager(activity);
-
-            case PHONE:
-                return new PhoneUIManager(activity);
-
-            case LEGACY_PHONE:
-                return new LegacyPhoneUIManager(activity);
-
-            default:
-                return new PhoneUIManager(activity);
-        }
+        return sUIType.createUIManager(activity);
     }
 
     private static void init(Context context) {
-        String uiTypePref = PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.PREFERENCE_UI_TYPE, "AUTO");
-
-        if ("AUTO".equals(uiTypePref)) {
-            if (context.getResources().getBoolean(R.bool.isTablet)) {
-                sUIType = UIType.TABLET;
-            } else {
-                sUIType = UIType.PHONE;
+        try {
+            String uiTypePref = PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.PREFERENCE_UI_TYPE, "AUTO");
+            if ("AUTO".equals(uiTypePref)) {
+                if (ApplicationUtils.isATablet(context)) {
+                    sUIType = UIType.TABLET;
+                } else {
+                    sUIType = UIType.PHONE;
+                }
+                return;
             }
-        } else if ("TABLET".equals(uiTypePref)) {
-            sUIType = UIType.TABLET;
-        } else if ("LEGACY_PHONE".equals(uiTypePref)) {
-            sUIType = UIType.LEGACY_PHONE;
-        } else {
-            sUIType = UIType.PHONE;
+            sUIType = UIType.getFromName(uiTypePref);
+        } finally {
+            isInitialized = true;
         }
-
-        isInitialized = true;
     }
 
     private static void checkInit(Context context) {
@@ -125,5 +143,4 @@ public class UIFactory {
             init(context);
         }
     }
-
 }

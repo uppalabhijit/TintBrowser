@@ -250,4 +250,8 @@ public class ApplicationUtils {
         LayoutInflater layoutInflater = (LayoutInflater) ContextRegistry.get().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         return layoutInflater.inflate(layoutId, null);
     }
+
+    public static boolean isATablet(Context context) {
+        return context.getResources().getBoolean(R.bool.isTablet);
+    }
 }
