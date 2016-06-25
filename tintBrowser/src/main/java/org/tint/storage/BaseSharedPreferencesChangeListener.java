@@ -10,7 +10,7 @@ import org.tint.utils.Predicate;
  * User: Abhijit
  * Date: 2016-06-07
  */
-public abstract class BaseSharedPreferencesChangeListener implements OnSharedPreferenceChangeListener {
+abstract class BaseSharedPreferencesChangeListener implements OnSharedPreferenceChangeListener {
     private final Predicate<String> predicate;
     private final Callback callback;
 

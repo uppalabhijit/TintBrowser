@@ -6,7 +6,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
  * User: Abhijit
  * Date: 2016-06-07
  */
-public abstract class BasePrefsStorage {
+abstract class BasePrefsStorage {
     protected final SharedPrefsStorage sharedPrefsStorage;
 
     public BasePrefsStorage() {
