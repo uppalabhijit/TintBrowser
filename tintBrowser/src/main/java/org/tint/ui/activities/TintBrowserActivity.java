@@ -149,8 +149,7 @@ public class TintBrowserActivity extends BaseActivity {
         uiManager.onNewIntent(startIntent);
 
         final Set<String> tabs = tintBrowserActivityStorage.getSavedTabs();
-
-        if ((tabs != null) && (!tabs.isEmpty())) {
+        if (!tabs.isEmpty()) {
             String tabsRestoreMode = tintBrowserActivityStorage.getRestoreTabsPreference();
             TabRestoreMode.getFromString(tabsRestoreMode).execute(this, tintBrowserActivityStorage, tabs);
         }
