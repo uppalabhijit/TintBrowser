@@ -21,14 +21,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -92,8 +92,8 @@ abstract class BaseUIManager implements UIManager {//, WebViewFragmentListener {
     public BaseUIManager(TintBrowserActivity activity) {
         mActivity = activity;
 
-        mActionBar = mActivity.getActionBar();
-        mFragmentManager = mActivity.getFragmentManager();
+        mActionBar = mActivity.getSupportActionBar();
+        mFragmentManager = mActivity.getSupportFragmentManager();
 
         mGeolocationPermissionsDialog = null;
 

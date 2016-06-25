@@ -72,9 +72,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activities.PreferencesActivity" android:label="@string/PreferencesActivityTitle"></activity>
+        <activity android:name=".ui.activities.PreferencesActivity" android:label="@string/PreferencesActivityTitle"
+                  android:theme="@android:style/Theme.Holo"></activity>
         <activity android:name=".ui.activities.BookmarksActivity"></activity>
-        <activity android:name=".ui.activities.EditBookmarkActivity" android:theme="@android:style/Theme.Holo.DialogWhenLarge"></activity>
+
+        <activity android:name=".ui.activities.EditBookmarkActivity"
+                  android:theme="@style/Theme.AppCompat.DialogWhenLarge"></activity>
 
         <provider
                 android:name=".providers.BookmarksProvider"

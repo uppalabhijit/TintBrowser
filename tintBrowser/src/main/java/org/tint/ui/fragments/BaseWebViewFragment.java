@@ -23,8 +23,8 @@ import org.tint.domain.web.CustomWebViewClient;
 import org.tint.ui.managers.UIManager;
 import org.tint.utils.Constants;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 

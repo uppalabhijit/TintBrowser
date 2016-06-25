@@ -17,7 +17,7 @@
 
 <resources>
 
-    <style name="ApplicationTheme" parent="@android:style/Theme.Holo">
+    <style name="ApplicationTheme" parent="@style/Theme.AppCompat">
     </style>
     
     <style name="ApplicationTheme.ListMainItem">

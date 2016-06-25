@@ -18,7 +18,7 @@ package org.tint.ui.fragments;
 import org.tint.R;
 import org.tint.ui.managers.UIManager;
 
-import android.app.ActionBar.Tab;
+import android.support.v7.app.ActionBar.Tab;
 import android.text.TextUtils;
 import android.webkit.WebView;
 

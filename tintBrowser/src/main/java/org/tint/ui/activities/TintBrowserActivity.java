@@ -19,13 +19,13 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Set;
 
-import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.DownloadManager;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -40,14 +40,14 @@ import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
 import org.tint.domain.download.DownloadStatus;
 import org.tint.domain.download.TintDownloadManager;
+import org.tint.domain.model.DownloadRequest;
+import org.tint.domain.model.DownloadResponse;
 import org.tint.providers.BookmarksWrapper;
 import org.tint.storage.CommonPrefsStorage;
 import org.tint.storage.TintBrowserActivityStorage;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIFactory;
 import org.tint.ui.managers.UIManager;
-import org.tint.domain.model.DownloadRequest;
-import org.tint.domain.model.DownloadResponse;
 import org.tint.ui.uihelpers.TabRestoreMode;
 import org.tint.ui.uihelpers.TintActivityResultHandler;
 import org.tint.ui.uihelpers.browser.BrowserActivityMenuOptions;
@@ -179,9 +179,9 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     protected void initActionBar(Bundle savedInstanceState) {
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        getActionBar().addOnMenuVisibilityListener(new OnMenuVisibilityListener() {
+        getSupportActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
             @Override
             public void onMenuVisibilityChanged(boolean isVisible) {
                 uiManager.onMenuVisibilityChanged(isVisible);

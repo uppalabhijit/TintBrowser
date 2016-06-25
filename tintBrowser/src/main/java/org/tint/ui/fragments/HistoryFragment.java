@@ -18,11 +18,11 @@ package org.tint.ui.fragments;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.webkit.DateSorter;
@@ -113,7 +113,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         baseHistoryFragmentUi.changeCursor(data);
         if (data != null) {
             baseHistoryFragmentUi.onLoadFinished(data);
@@ -122,7 +122,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
         baseHistoryFragmentUi.changeCursor(null);
     }
 }

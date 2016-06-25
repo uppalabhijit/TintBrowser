@@ -1,14 +1,14 @@
 package org.tint.ui.activities;
 
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
 /**
  * Created by Abhijit on 2016-05-28.
  */
-abstract class BaseActivity extends Activity {
+abstract class BaseActivity extends AppCompatActivity {
     protected static final int EMPTY_RESOURCE = -1;
 
     @Override

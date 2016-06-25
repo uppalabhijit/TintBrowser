@@ -17,12 +17,12 @@ package org.tint.ui.managers;
 
 import java.util.*;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
 import android.view.ActionMode;
 import android.view.MotionEvent;
 import android.view.View;

@@ -24,11 +24,11 @@ import java.util.List;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v4.content.CursorLoader;
 import android.util.Log;
 
 import org.tint.storage.BookmarksPrefsStorage;

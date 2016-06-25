@@ -15,31 +15,31 @@
 
 package org.tint.ui.fragments;
 
-import org.tint.R;
-import org.tint.ui.model.BookmarkHistoryItem;
-import org.tint.ui.adapters.BookmarksAdapter;
-import org.tint.providers.BookmarksProvider;
-import org.tint.providers.BookmarksWrapper;
-import org.tint.ui.activities.TintBrowserActivity;
-import org.tint.ui.managers.UIManager;
-import org.tint.utils.Constants;
-
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+
+import org.tint.R;
+import org.tint.providers.BookmarksProvider;
+import org.tint.providers.BookmarksWrapper;
+import org.tint.ui.activities.TintBrowserActivity;
+import org.tint.ui.adapters.BookmarksAdapter;
+import org.tint.ui.managers.UIManager;
+import org.tint.ui.model.BookmarkHistoryItem;
+import org.tint.utils.Constants;
 
 public abstract class StartPageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 

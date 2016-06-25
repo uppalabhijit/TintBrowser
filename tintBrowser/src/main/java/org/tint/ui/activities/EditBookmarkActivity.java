@@ -17,9 +17,9 @@ package org.tint.ui.activities;
 
 import java.util.List;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,8 +30,8 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import org.tint.R;
-import org.tint.ui.model.FolderItem;
 import org.tint.providers.BookmarksWrapper;
+import org.tint.ui.model.FolderItem;
 import org.tint.utils.Constants;
 
 public class EditBookmarkActivity extends BaseActivity {
@@ -146,7 +146,7 @@ public class EditBookmarkActivity extends BaseActivity {
 
     @Override
     protected void initActionBar(Bundle savedInstanceState) {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -155,7 +155,6 @@ public class EditBookmarkActivity extends BaseActivity {
 
     @Override
     protected void doCreateOptionsMenu(Menu menu) {
-
     }
 
     @Override

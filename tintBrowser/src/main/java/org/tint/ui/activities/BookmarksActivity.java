@@ -18,9 +18,9 @@ package org.tint.ui.activities;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -56,7 +56,7 @@ public class BookmarksActivity extends BaseActivity {
 
     @Override
     protected void initActionBar(Bundle savedInstanceState) {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -82,7 +82,7 @@ public class BookmarksActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_SELECTED_TAB_INDEX, getActionBar().getSelectedNavigationIndex());
+        outState.putInt(EXTRA_SELECTED_TAB_INDEX, getSupportActionBar().getSelectedNavigationIndex());
     }
 
     @Override
@@ -94,7 +94,7 @@ public class BookmarksActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        if (getActionBar().getSelectedNavigationIndex() == 0) {
+        if (getSupportActionBar().getSelectedNavigationIndex() == 0) {
             menu.findItem(R.id.BookmarksActivityMenuSortBookmarks).setVisible(true);
         } else {
             menu.findItem(R.id.BookmarksActivityMenuSortBookmarks).setVisible(false);

@@ -17,9 +17,9 @@ package org.tint.ui.managers;
 
 import java.util.*;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ActionMode;
 import android.webkit.WebView;
 import android.widget.ImageView;
