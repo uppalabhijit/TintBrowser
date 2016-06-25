@@ -714,6 +714,7 @@ class LegacyPhoneUIManager extends BasePhoneUIManager {
         }
 
     }
+
     private static class HideToolbarsRunnable implements Runnable {
         private final LegacyPhoneUIManager uiManager;
         private final int duration;
