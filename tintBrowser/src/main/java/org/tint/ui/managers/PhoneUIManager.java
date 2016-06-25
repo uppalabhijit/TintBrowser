@@ -44,7 +44,7 @@ import org.tint.ui.views.TabsScroller.OnRemoveListener;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.Constants;
 
-public class PhoneUIManager extends BasePhoneUIManager {
+class PhoneUIManager extends BasePhoneUIManager {
 
     private PanelLayout mPanel;
 

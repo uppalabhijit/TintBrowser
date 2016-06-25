@@ -15,27 +15,11 @@
 
 package org.tint.ui.managers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-import org.tint.R;
-import org.tint.controllers.Controller;
-import org.tint.ui.activities.TintBrowserActivity;
-import org.tint.ui.webview.CustomWebView;
-import org.tint.ui.fragments.BaseWebViewFragment;
-import org.tint.ui.fragments.StartPageFragment;
-import org.tint.ui.fragments.TabletStartPageFragment;
-import org.tint.ui.fragments.TabletWebViewFragment;
-import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
-import org.tint.ui.tabs.WebViewFragmentTabListener;
-import org.tint.ui.views.TabletUrlBar;
-import org.tint.ui.views.TabletUrlBar.OnTabletUrlBarEventListener;
 import android.app.ActionBar;
-import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -47,7 +31,19 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-public class TabletUIManager extends BaseUIManager {
+import org.tint.R;
+import org.tint.controllers.Controller;
+import org.tint.ui.activities.TintBrowserActivity;
+import org.tint.ui.fragments.BaseWebViewFragment;
+import org.tint.ui.fragments.StartPageFragment;
+import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
+import org.tint.ui.fragments.TabletStartPageFragment;
+import org.tint.ui.fragments.TabletWebViewFragment;
+import org.tint.ui.views.TabletUrlBar;
+import org.tint.ui.views.TabletUrlBar.OnTabletUrlBarEventListener;
+import org.tint.ui.webview.CustomWebView;
+
+class TabletUIManager extends BaseUIManager {
 
 	private Map<Tab, TabletWebViewFragment> mTabs;
 	private Map<UUID, TabletWebViewFragment> mFragmentsMap;
@@ -485,4 +481,47 @@ public class TabletUIManager extends BaseUIManager {
 		mUrlBar.setBackEnabled(currentWebView.canGoBack());
 		mUrlBar.setForwardEnabled(currentWebView.canGoForward());
 	}
+
+	private static class WebViewFragmentTabListener implements ActionBar.TabListener {
+
+		private final  TabletUIManager mUIManager;
+		private final TabletWebViewFragment mFragment;
+		private boolean mFragmentAdded;
+
+		public WebViewFragmentTabListener(TabletUIManager uiManager, TabletWebViewFragment fragment) {
+			this.mUIManager = uiManager;
+			this.mFragment = fragment;
+			this.mFragmentAdded = false;
+		}
+
+		@Override
+		public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+		}
+
+		@Override
+		public void onTabSelected(Tab arg0, FragmentTransaction ft) {
+			if (mFragment.isStartPageShown()) {
+				ft.show(mUIManager.getStartPageFragment());
+			} else {
+				if (!mFragmentAdded) {
+					ft.add(R.id.WebViewContainer, mFragment, null);
+					mFragmentAdded = true;
+				} else {
+					ft.show(mFragment);
+				}
+			}
+			mFragment.onTabSelected(arg0);
+			mUIManager.onTabSelected(arg0);
+		}
+
+		@Override
+		public void onTabUnselected(Tab arg0, FragmentTransaction ft) {
+			if (mFragment.isStartPageShown()) {
+				ft.hide(mUIManager.getStartPageFragment());
+			} else {
+				ft.hide(mFragment);
+			}
+		}
+	}
+
 }

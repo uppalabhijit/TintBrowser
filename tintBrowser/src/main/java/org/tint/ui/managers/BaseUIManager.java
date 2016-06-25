@@ -59,7 +59,7 @@ import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
 @SuppressLint("HandlerLeak")
-public abstract class BaseUIManager implements UIManager {//, WebViewFragmentListener {
+abstract class BaseUIManager implements UIManager {//, WebViewFragmentListener {
 
     protected static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS =
             new FrameLayout.LayoutParams(
