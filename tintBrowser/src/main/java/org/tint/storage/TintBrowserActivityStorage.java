@@ -59,7 +59,7 @@ public class TintBrowserActivityStorage extends BasePrefsStorage {
     }
 
     public boolean isFullScreen() {
-        return sharedPrefsStorage.getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false);
+        return sharedPrefsStorage.getBoolean(Constants.PREFERENCE_FULL_SCREEN, false);
     }
 
     public void setFullScreen(boolean fullScreen) {
