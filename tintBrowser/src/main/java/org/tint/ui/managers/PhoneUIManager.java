@@ -36,7 +36,6 @@ import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.PhoneStartPageFragment;
 import org.tint.ui.fragments.PhoneWebViewFragment;
-import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
 import org.tint.ui.views.BadgedImageView;
 import org.tint.ui.views.PanelLayout;
 import org.tint.ui.views.PanelLayout.PanelEventsListener;
@@ -530,12 +529,6 @@ class PhoneUIManager extends BasePhoneUIManager {
     @Override
     protected void createStartPageFragment() {
         mStartPageFragment = new PhoneStartPageFragment();
-        mStartPageFragment.setOnStartPageItemClickedListener(new OnStartPageItemClickedListener() {
-            @Override
-            public void onStartPageItemClicked(String url) {
-                loadUrl(url);
-            }
-        });
     }
 
     private void showTabByIndex(int index, boolean notifyTabSwitched) {

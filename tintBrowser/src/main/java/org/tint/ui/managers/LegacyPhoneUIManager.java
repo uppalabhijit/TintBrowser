@@ -39,7 +39,6 @@ import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.LegacyPhoneStartPageFragment;
 import org.tint.ui.fragments.PhoneWebViewFragment;
-import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
 import org.tint.ui.views.PhoneUrlBar;
 import org.tint.ui.views.PhoneUrlBar.OnPhoneUrlBarEventListener;
 import org.tint.ui.webview.CustomWebView;
@@ -507,12 +506,6 @@ class LegacyPhoneUIManager extends BasePhoneUIManager {
     @Override
     protected void createStartPageFragment() {
         mStartPageFragment = new LegacyPhoneStartPageFragment();
-        mStartPageFragment.setOnStartPageItemClickedListener(new OnStartPageItemClickedListener() {
-            @Override
-            public void onStartPageItemClicked(String url) {
-                loadUrl(url);
-            }
-        });
     }
 
     @Override

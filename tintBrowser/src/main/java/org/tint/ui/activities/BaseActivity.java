@@ -9,16 +9,18 @@ import android.view.Menu;
  * Created by Abhijit on 2016-05-28.
  */
 abstract class BaseActivity extends Activity {
+    protected static final int EMPTY_RESOURCE = -1;
 
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int layoutId = getLayoutId();
-        if (layoutId != -1) {
+
+        if (layoutId != EMPTY_RESOURCE) {
             setContentView(layoutId);
         }
         int titleId = getTitleId();
-        if (titleId != -1) {
+        if (titleId != EMPTY_RESOURCE) {
             setTitle(titleId);
         }
         initActionBar(savedInstanceState);

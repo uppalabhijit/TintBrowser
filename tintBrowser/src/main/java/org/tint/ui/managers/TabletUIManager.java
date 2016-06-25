@@ -36,7 +36,6 @@ import org.tint.controllers.Controller;
 import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.StartPageFragment;
-import org.tint.ui.fragments.StartPageFragment.OnStartPageItemClickedListener;
 import org.tint.ui.fragments.TabletStartPageFragment;
 import org.tint.ui.fragments.TabletWebViewFragment;
 import org.tint.ui.views.TabletUrlBar;
@@ -62,12 +61,6 @@ class TabletUIManager extends BaseUIManager {
             FragmentTransaction ft = mFragmentManager.beginTransaction();
 
             mStartPageFragment = new TabletStartPageFragment();
-            mStartPageFragment.setOnStartPageItemClickedListener(new OnStartPageItemClickedListener() {
-                @Override
-                public void onStartPageItemClicked(String url) {
-                    loadUrl(url);
-                }
-            });
 
             ft.add(R.id.WebViewContainer, mStartPageFragment);
             ft.hide(mStartPageFragment);
