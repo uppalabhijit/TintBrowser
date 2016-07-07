@@ -90,7 +90,6 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     protected void doOnCreate(Bundle savedInstanceState) {
-        ContextRegistry.init(this);
         uiManager = UIFactory.createUIManager(this);
         Controller.getInstance().init(uiManager, this);
         Controller.getInstance().getAddonManager().bindAddons();
