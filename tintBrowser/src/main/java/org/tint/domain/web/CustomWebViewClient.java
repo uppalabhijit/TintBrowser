@@ -39,10 +39,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.HttpAuthHandler;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -369,5 +366,15 @@ public class CustomWebViewClient extends WebViewClient {
         }
 
         return false;
+    }
+
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        IAdBlocker iAdBlocker = IAdBlocker.Factory.get();
+        if (iAdBlocker.isAd(url)) {
+            return iAdBlocker.createEmptyResource();
+        } else {
+            return super.shouldInterceptRequest(view, url);
+        }
     }
 }

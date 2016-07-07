@@ -17,6 +17,8 @@ package org.tint.utils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import android.content.Context;
@@ -93,5 +95,27 @@ public class IOUtils {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    public static List<String> readLinesFromAssets(Context context, String fileName) throws IOException {
+        InputStream inputStream = null;
+        List<String> result = new ArrayList<String>();
+        try {
+            inputStream = context.getAssets().open(fileName);
+            byte[] buffer = new byte[8192];
+            StringBuffer stringBuffer = new StringBuffer();
+            while (inputStream.read(buffer) != -1) {
+                stringBuffer.append(new String(buffer));
+            }
+            String[] lines = stringBuffer.toString().split("\\r\\n");
+            for (String str : lines) {
+                result.add(str);
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        return result;
     }
 }
