@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.SparseArray;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -36,19 +37,17 @@ import org.tint.ui.activities.TintBrowserActivity;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.fragments.PhoneStartPageFragment;
 import org.tint.ui.fragments.PhoneWebViewFragment;
+import org.tint.ui.uihelpers.NoopDrawerListener;
 import org.tint.ui.views.BadgedImageView;
-import org.tint.ui.views.PanelLayout;
-import org.tint.ui.views.PanelLayout.PanelEventsListener;
 import org.tint.ui.views.PhoneUrlBar;
 import org.tint.ui.views.PhoneUrlBar.OnPhoneUrlBarEventListener;
 import org.tint.ui.views.TabView;
+import org.tint.ui.views.TabsScroller;
 import org.tint.ui.views.TabsScroller.OnRemoveListener;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.utils.Constants;
 
 class PhoneUIManager extends BasePhoneUIManager {
-
-    private PanelLayout mPanel;
 
     private BadgedImageView mFaviconView;
 
@@ -59,6 +58,9 @@ class PhoneUIManager extends BasePhoneUIManager {
     private TabAdapter mAdapter;
 
     private SharedPreferences mPreferences;
+    private TabsScroller tabsScroller;
+    private DrawerLayout drawerLayout;
+
 
     static {
         sAnimationType = AnimationType.NONE;
@@ -70,24 +72,19 @@ class PhoneUIManager extends BasePhoneUIManager {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 
         mAdapter = new TabAdapter();
-        mPanel.getTabsScroller().setAdapter(mAdapter);
+        tabsScroller.setAdapter(mAdapter);
     }
 
     @Override
     protected void setupUI() {
-        mActionBar.hide();
 
-        mPanel = (PanelLayout) mActivity.findViewById(R.id.panel_layout);
+        tabsScroller = (TabsScroller) mActivity.findViewById(R.id.tabs_scroller);
+        drawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
 
-        mPanel.setPanelEventsListener(new PanelEventsListener() {
-
+        drawerLayout.setDrawerListener(new NoopDrawerListener() {
             @Override
-            public void onPanelShown() {
-                mPanel.getTabsScroller().snapToSelected(mCurrentTabIndex, true);
-            }
-
-            @Override
-            public void onPanelHidden() {
+            public void onDrawerOpened(View drawerView) {
+                tabsScroller.snapToSelected(mCurrentTabIndex, true);
             }
         });
 
@@ -108,15 +105,15 @@ class PhoneUIManager extends BasePhoneUIManager {
                         getBoolean(Constants.PREFERENCE_INCOGNITO_BY_DEFAULT, false));
 
                 if (mPreferences.getBoolean(Constants.PREFERENCE_CLOSE_PANEL_ON_NEW_TAB, true)) {
-                    mPanel.hidePanel();
+                    closeDrawer();
                 } else {
                     // Wait for the adapter/scoller to updated before scrolling to the new tab.
                     // Maybe find a better way to do this.
-                    mPanel.postDelayed(new Runnable() {
+                    tabsScroller.postDelayed(new Runnable() {
 
                         @Override
                         public void run() {
-                            mPanel.getTabsScroller().snapToSelected(mCurrentTabIndex, true);
+                            tabsScroller.snapToSelected(mCurrentTabIndex, true);
                         }
                     }, 50);
                 }
@@ -187,7 +184,7 @@ class PhoneUIManager extends BasePhoneUIManager {
                 if (mUrlBar.isUrlBarVisible()) {
                     mUrlBar.hideUrl();
                 } else {
-                    mPanel.togglePanel();
+                    togglePanel();
                 }
             }
         });
@@ -207,7 +204,7 @@ class PhoneUIManager extends BasePhoneUIManager {
                 if ((!getCurrentWebViewFragment().isStartPageShown()) &&
                         (getCurrentWebView().canGoBack())) {
                     getCurrentWebView().goBack();
-                    mPanel.hidePanel();
+                    closeDrawer();
                 }
             }
         });
@@ -220,7 +217,7 @@ class PhoneUIManager extends BasePhoneUIManager {
                 if ((!getCurrentWebViewFragment().isStartPageShown()) &&
                         (getCurrentWebView().canGoForward())) {
                     getCurrentWebView().goForward();
-                    mPanel.hidePanel();
+                    closeDrawer();
                 }
             }
         });
@@ -233,11 +230,11 @@ class PhoneUIManager extends BasePhoneUIManager {
                 mProgressBar.setProgress(0);
                 mProgressBar.setVisibility(View.GONE);
                 loadHomePage();
-                mPanel.hidePanel();
+                closeDrawer();
             }
         });
 
-        mPanel.getTabsScroller().setOnRemoveListener(new OnRemoveListener() {
+        tabsScroller.setOnRemoveListener(new OnRemoveListener() {
 
             @Override
             public void onRemovePosition(int position) {
@@ -250,6 +247,26 @@ class PhoneUIManager extends BasePhoneUIManager {
         });
 
         super.setupUI();
+    }
+
+    private void togglePanel() {
+        if (isDrawerOpen()) {
+            closeDrawer();
+        } else {
+            openDrawer();
+        }
+    }
+
+    private boolean isDrawerOpen() {
+        return drawerLayout.isDrawerOpen(Gravity.LEFT);
+    }
+
+    private void openDrawer() {
+        drawerLayout.openDrawer(Gravity.LEFT);
+    }
+
+    private void closeDrawer() {
+        drawerLayout.closeDrawer(Gravity.LEFT);
     }
 
     @Override
@@ -336,7 +353,7 @@ class PhoneUIManager extends BasePhoneUIManager {
             int index = mFragmentsList.indexOf(parent);
             if (index != -1) {
                 final TabView tabview = mAdapter.getViewAt(index);
-                mPanel.postDelayed(new Runnable() {
+                drawerLayout.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         tabview.setImage(view.capturePicture());
@@ -376,8 +393,8 @@ class PhoneUIManager extends BasePhoneUIManager {
                 mUrlBar.hideUrl();
 
                 return true;
-            } else if (mPanel.isPanelShown()) {
-                mPanel.hidePanel();
+            } else if (isDrawerOpen()) {
+                closeDrawer();
                 return true;
             } else {
                 CustomWebView currentWebView = getCurrentWebView();
@@ -433,9 +450,13 @@ class PhoneUIManager extends BasePhoneUIManager {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if ((requestCode == Constants.ACTIVITY_BOOKMARKS) &&
                 (resultCode == Activity.RESULT_OK)) {
-            if (mPanel.isPanelShown()) {
-                mPanel.hidePanel();
-            }
+            closeDrawerIfOpen();
+        }
+    }
+
+    private void closeDrawerIfOpen() {
+        if (isDrawerOpen()) {
+            closeDrawer();
         }
     }
 
@@ -599,10 +620,10 @@ class PhoneUIManager extends BasePhoneUIManager {
                 @Override
                 public void onClick(View v) {
                     if (tabview.isClose(v)) {
-                        mPanel.getTabsScroller().animateOut(tabview);
+                        tabsScroller.animateOut(tabview);
                     } else {
                         showTabByIndex(position, true);
-                        mPanel.hidePanel();
+                        closeDrawer();
                     }
                 }
             });
@@ -617,5 +638,4 @@ class PhoneUIManager extends BasePhoneUIManager {
         }
 
     }
-
 }

@@ -1,41 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-   Tint Browser for Android
-  
-   Copyright (C) 2012 - to infinity and beyond J. Devauchelle and contributors.
- 
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   version 3 as published by the Free Software Foundation.
- 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
--->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <RelativeLayout
-        android:id="@+id/panel"
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/panel"
         android:layout_width="225dip"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:background="#303030"
+        android:orientation="vertical">
 
-        <LinearLayout
+    <LinearLayout
             android:id="@+id/TopPanel"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            android:layout_alignParentTop="true"
             android:background="@drawable/ab_solid_dark_holo"
             android:scaleType="fitXY"
-            android:weightSum="3" >
+            android:weightSum="3">
 
-            <ImageView
+        <ImageView
                 android:id="@+id/BtnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -48,9 +28,9 @@
                 android:paddingLeft="8dip"
                 android:paddingRight="8dip"
                 android:paddingTop="8dip"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back"/>
 
-            <ImageView
+        <ImageView
                 android:id="@+id/BtnHome"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -63,9 +43,9 @@
                 android:paddingLeft="8dip"
                 android:paddingRight="8dip"
                 android:paddingTop="8dip"
-                android:src="@drawable/ic_home" />
+                android:src="@drawable/ic_home"/>
 
-            <ImageView
+        <ImageView
                 android:id="@+id/BtnForward"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -78,22 +58,21 @@
                 android:paddingLeft="8dip"
                 android:paddingRight="8dip"
                 android:paddingTop="8dip"
-                android:src="@drawable/ic_forward" />
-        </LinearLayout>
+                android:src="@drawable/ic_forward"/>
+    </LinearLayout>
 
-        <LinearLayout
+    <LinearLayout
             android:id="@+id/SecondaryPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/TopPanel"
             android:layout_marginBottom="5dip"
             android:layout_marginLeft="12dip"
             android:layout_marginRight="12dip"
             android:layout_marginTop="10dip"
             android:scaleType="fitXY"
-            android:weightSum="2" >
+            android:weightSum="2">
 
-            <ImageView
+        <ImageView
                 android:id="@+id/BtnBookmarks"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -107,9 +86,9 @@
                 android:paddingLeft="8dip"
                 android:paddingRight="8dip"
                 android:paddingTop="8dip"
-                android:src="@drawable/ic_bookmarks" />
+                android:src="@drawable/ic_bookmarks"/>
 
-            <ImageView
+        <ImageView
                 android:id="@+id/BtnAddTab"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -123,17 +102,13 @@
                 android:paddingLeft="8dip"
                 android:paddingRight="8dip"
                 android:paddingTop="8dip"
-                android:src="@android:drawable/ic_menu_add" />
-        </LinearLayout>
+                android:src="@android:drawable/ic_menu_add"/>
+    </LinearLayout>
 
-        <org.tint.ui.views.TabsScroller
+    <org.tint.ui.views.TabsScroller
             android:id="@+id/tabs_scroller"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/SecondaryPanel" />
-    </RelativeLayout>
-
-    <include layout="@layout/browser_main_content"/>
-
-</RelativeLayout>
+            android:layout_below="@+id/SecondaryPanel"/>
+</LinearLayout>

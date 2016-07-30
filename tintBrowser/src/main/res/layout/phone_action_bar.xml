@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+              android:layout_height="?android:attr/actionBarSize"
+              android:orientation="vertical">
+
+    <LinearLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:layout_margin="0dip"
+            android:background="@drawable/ab_solid_dark_holo"
+            android:orientation="horizontal"
+            android:padding="0dip"
+            android:scaleType="fitXY">
+
+        <org.tint.ui.views.BadgedImageView
+                android:id="@+id/FaviconView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/ContentDescriptionFavicon"
+                android:focusable="true"
+                android:paddingBottom="5dip"
+                android:paddingTop="5dip"
+                android:src="@drawable/ic_tabs"/>
+
+        <org.tint.ui.views.PhoneUrlBar
+                android:id="@+id/UrlBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/FaviconView"/>
+    </LinearLayout>
+    <ProgressBar
+            android:id="@+id/WebViewProgress"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dip"
+            android:layout_marginRight="0dip"
+            android:layout_marginTop="-8dip"
+            android:indeterminate="false"/>
+</LinearLayout>
