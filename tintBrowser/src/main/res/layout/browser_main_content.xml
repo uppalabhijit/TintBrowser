@@ -21,7 +21,7 @@
                 app:contentInsetStart="0dp"
                 app:contentInsetRight="0dp"
                 app:contentInsetEnd="0dp"
-                android:background="?attr/colorPrimary"
+                android:background="#222222"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 app:layout_scrollFlags="scroll|enterAlways|snap">
             <include layout="@layout/phone_action_bar"/>
