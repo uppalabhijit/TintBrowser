@@ -24,10 +24,15 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.NestedScrollingChildHelper;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.CookieManager;
@@ -45,15 +50,16 @@ import org.slf4j.LoggerFactory;
 import org.tint.R;
 import org.tint.controllers.Controller;
 import org.tint.domain.HtmlNode;
+import org.tint.domain.model.DownloadRequest;
 import org.tint.domain.utils.UrlUtils;
 import org.tint.ui.dialogs.DownloadConfirmDialog;
 import org.tint.ui.fragments.BaseWebViewFragment;
 import org.tint.ui.managers.UIManager;
-import org.tint.domain.model.DownloadRequest;
 import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
-public class CustomWebView extends WebView implements DownloadListener, DownloadConfirmDialog.IUserActionListener, ViewTreeObserver.OnScrollChangedListener {
+public class CustomWebView extends WebView implements DownloadListener, DownloadConfirmDialog.IUserActionListener, ViewTreeObserver
+        .OnScrollChangedListener, NestedScrollingChild {
 
     private UIManager mUIManager;
     private Context mContext;
@@ -67,6 +73,12 @@ public class CustomWebView extends WebView implements DownloadListener, Download
     private int scrollX = 0;
     private int scrollY = 0;
 
+    private int mNestedYOffset;
+    private int mLastMotionY;
+    private final int[] mScrollOffset = new int[2];
+    private final int[] mScrollConsumed = new int[2];
+    private NestedScrollingChildHelper mChildHelper;
+
     public CustomWebView(UIManager uiManager, boolean privateBrowsing) {
         this(uiManager.getMainActivity(), null, privateBrowsing);
         mUIManager = uiManager;
@@ -76,6 +88,7 @@ public class CustomWebView extends WebView implements DownloadListener, Download
     public CustomWebView(Context context, AttributeSet attrs) {
         super(context, attrs, android.R.attr.webViewStyle);
         mContext = context;
+        init();
     }
 
     public CustomWebView(Context context, AttributeSet attrs, boolean privateBrowsing) {
@@ -94,6 +107,12 @@ public class CustomWebView extends WebView implements DownloadListener, Download
             setupContextMenu();
         }
         getViewTreeObserver().addOnScrollChangedListener(this);
+        init();
+    }
+
+    private void init() {
+        mChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
     }
 
     public void setParentFragment(BaseWebViewFragment parentFragment) {
@@ -338,5 +357,109 @@ public class CustomWebView extends WebView implements DownloadListener, Download
 
     private Logger getLogger() {
         return LoggerFactory.getLogger(getClass());
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = false;
+
+        MotionEvent trackedEvent = MotionEvent.obtain(event);
+
+        final int action = MotionEventCompat.getActionMasked(event);
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            mNestedYOffset = 0;
+        }
+
+        int y = (int) event.getY();
+
+        event.offsetLocation(0, mNestedYOffset);
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                mLastMotionY = y;
+                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
+                result = super.onTouchEvent(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int deltaY = mLastMotionY - y;
+
+                if (dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset)) {
+                    deltaY -= mScrollConsumed[1];
+                    trackedEvent.offsetLocation(0, mScrollOffset[1]);
+                    mNestedYOffset += mScrollOffset[1];
+                }
+
+                int oldY = getScrollY();
+                mLastMotionY = y - mScrollOffset[1];
+                if (deltaY < 0) {
+                    int newScrollY = Math.max(0, oldY + deltaY);
+                    deltaY -= newScrollY - oldY;
+                    if (dispatchNestedScroll(0, newScrollY - deltaY, 0, deltaY, mScrollOffset)) {
+                        mLastMotionY -= mScrollOffset[1];
+                        trackedEvent.offsetLocation(0, mScrollOffset[1]);
+                        mNestedYOffset += mScrollOffset[1];
+                    }
+                }
+
+                trackedEvent.recycle();
+                result = super.onTouchEvent(trackedEvent);
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                stopNestedScroll();
+                result = super.onTouchEvent(event);
+                break;
+        }
+        return result;
+    }
+
+    // NestedScrollingChild
+
+    @Override
+    public void setNestedScrollingEnabled(boolean enabled) {
+        mChildHelper.setNestedScrollingEnabled(enabled);
+    }
+
+    @Override
+    public boolean isNestedScrollingEnabled() {
+        return mChildHelper.isNestedScrollingEnabled();
+    }
+
+    @Override
+    public boolean startNestedScroll(int axes) {
+        return mChildHelper.startNestedScroll(axes);
+    }
+
+    @Override
+    public void stopNestedScroll() {
+        mChildHelper.stopNestedScroll();
+    }
+
+    @Override
+    public boolean hasNestedScrollingParent() {
+        return mChildHelper.hasNestedScrollingParent();
+    }
+
+    @Override
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
+        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+        return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+        return mChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+        return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 }
