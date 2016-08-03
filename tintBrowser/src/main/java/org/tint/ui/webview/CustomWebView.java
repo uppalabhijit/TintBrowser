@@ -79,23 +79,21 @@ public class CustomWebView extends WebView implements DownloadListener, Download
     private final int[] mScrollConsumed = new int[2];
     private NestedScrollingChildHelper mChildHelper;
 
-    public CustomWebView(UIManager uiManager, boolean privateBrowsing) {
-        this(uiManager.getMainActivity(), null, privateBrowsing);
-        mUIManager = uiManager;
+    public CustomWebView(Context context) {
+        this(context, null);
     }
 
     // Used only by edit mode (UI designer)
     public CustomWebView(Context context, AttributeSet attrs) {
-        super(context, attrs, android.R.attr.webViewStyle);
-        mContext = context;
-        init();
+        this(context, attrs, android.R.attr.webViewStyle);
+
     }
 
-    public CustomWebView(Context context, AttributeSet attrs, boolean privateBrowsing) {
-        super(context, attrs, android.R.attr.webViewStyle);
-        mPrivateBrowsing = privateBrowsing;
-
+    public CustomWebView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         mContext = context;
+        mChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
 
         if (!isInEditMode()) {
 
@@ -107,12 +105,11 @@ public class CustomWebView extends WebView implements DownloadListener, Download
             setupContextMenu();
         }
         getViewTreeObserver().addOnScrollChangedListener(this);
-        init();
     }
 
-    private void init() {
-        mChildHelper = new NestedScrollingChildHelper(this);
-        setNestedScrollingEnabled(true);
+    public void init(UIManager uiManager, boolean privateBrowsing) {
+        mUIManager = uiManager;
+        mPrivateBrowsing = privateBrowsing;
     }
 
     public void setParentFragment(BaseWebViewFragment parentFragment) {
