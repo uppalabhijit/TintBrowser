@@ -19,18 +19,20 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
 import org.tint.controllers.Controller;
+import org.tint.ui.adapters.BookmarksFragmentAdapter;
 import org.tint.ui.fragments.BookmarksFragment;
 import org.tint.ui.fragments.HistoryFragment;
 import org.tint.ui.managers.UIManager;
-import org.tint.ui.tabs.GenericTabListener;
 import org.tint.ui.uihelpers.bookmarks.BookmarkMenuOptions;
 import org.tint.ui.uihelpers.visitors.bookmarks.BookmarksMenuClickVisitor;
 
@@ -38,10 +40,12 @@ public class BookmarksActivity extends BaseActivity {
 
     private static final String EXTRA_SELECTED_TAB_INDEX = "EXTRA_SELECTED_TAB_INDEX";
     private UIManager uiManager;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected int getLayoutId() {
-        return -1;
+        return R.layout.bookmarks_layout;
     }
 
     @Override
@@ -52,37 +56,29 @@ public class BookmarksActivity extends BaseActivity {
     @Override
     protected void doOnCreate(Bundle savedInstanceState) {
         uiManager = Controller.getInstance().getUIManager();
+
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        BookmarksFragmentAdapter adapter = new BookmarksFragmentAdapter(getSupportFragmentManager());
+        adapter.addFragment(new BookmarksFragment(), "Bookmarks");
+        adapter.addFragment(new HistoryFragment(), "History");
+        viewPager.setAdapter(adapter);
     }
 
     @Override
     protected void initActionBar(Bundle savedInstanceState) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        Tab tab = actionBar.newTab();
-        tab.setText(R.string.BookmarksTabTitle);
-        tab.setTabListener(new GenericTabListener<BookmarksFragment>(this, "bookmarks", BookmarksFragment.class));
-        actionBar.addTab(tab);
-
-        tab = actionBar.newTab();
-        tab.setText(R.string.HistoryTabTitle);
-        tab.setTabListener(new GenericTabListener<HistoryFragment>(this, "history", HistoryFragment.class));
-        actionBar.addTab(tab);
-        if ((savedInstanceState != null) &&
-                (savedInstanceState.containsKey(EXTRA_SELECTED_TAB_INDEX))) {
-            int selectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_TAB_INDEX);
-            if ((selectedIndex == 0) || (selectedIndex == 1)) {
-                actionBar.setSelectedNavigationItem(selectedIndex);
-            }
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_SELECTED_TAB_INDEX, getSupportActionBar().getSelectedNavigationIndex());
     }
 
     @Override

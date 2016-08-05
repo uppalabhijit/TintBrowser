@@ -17,10 +17,12 @@ package org.tint.ui.fragments;
 
 import java.util.UUID;
 
+import org.tint.R;
 import org.tint.domain.web.CustomWebChromeClient;
 import org.tint.ui.webview.CustomWebView;
 import org.tint.domain.web.CustomWebViewClient;
 import org.tint.ui.managers.UIManager;
+import org.tint.utils.ApplicationUtils;
 import org.tint.utils.Constants;
 
 import android.os.Bundle;
@@ -119,8 +121,8 @@ public abstract class BaseWebViewFragment extends Fragment {
 	}
 	
 	private void createWebView(boolean addToParent) {
-		mWebView = new CustomWebView(mUIManager, mPrivateBrowsing);
-		
+		mWebView = (CustomWebView) ApplicationUtils.inflateView(R.layout.custom_web_view);
+		mWebView.init(mUIManager, mPrivateBrowsing);
 		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		mWebView.setLayoutParams(params);
 		

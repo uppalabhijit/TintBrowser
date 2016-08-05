@@ -26,6 +26,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -36,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tint.R;
 import org.tint.addons.AddonMenuItem;
-import org.tint.controllers.ContextRegistry;
 import org.tint.controllers.Controller;
 import org.tint.domain.download.DownloadStatus;
 import org.tint.domain.download.TintDownloadManager;
@@ -179,15 +179,17 @@ public class TintBrowserActivity extends BaseActivity {
 
     @Override
     protected void initActionBar(Bundle savedInstanceState) {
-        getSupportActionBar().setHomeButtonEnabled(true);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        getSupportActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
             @Override
             public void onMenuVisibilityChanged(boolean isVisible) {
                 uiManager.onMenuVisibilityChanged(isVisible);
             }
         });
-
     }
 
     @Override
