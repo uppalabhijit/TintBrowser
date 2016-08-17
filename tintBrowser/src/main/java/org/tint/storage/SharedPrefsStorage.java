@@ -83,6 +83,12 @@ final class SharedPrefsStorage {
         return sharedPreferences.getStringSet(key, defaultValue);
     }
 
+    public void setStringSet(String key, Set<String> stringSet) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putStringSet(key, stringSet);
+        editor.commit();
+    }
+
     public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener onSharedPreferenceChangeListener) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
     }

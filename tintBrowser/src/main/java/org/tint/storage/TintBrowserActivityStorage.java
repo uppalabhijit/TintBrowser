@@ -43,7 +43,7 @@ public class TintBrowserActivityStorage extends BasePrefsStorage {
     }
 
     public void saveTabs(Set<String> tabs) {
-        sharedPrefsStorage.getStringSet(Constants.TECHNICAL_PREFERENCE_SAVED_TABS, tabs);
+        sharedPrefsStorage.setStringSet(Constants.TECHNICAL_PREFERENCE_SAVED_TABS, tabs);
     }
 
     public String getUserHomePage() {
