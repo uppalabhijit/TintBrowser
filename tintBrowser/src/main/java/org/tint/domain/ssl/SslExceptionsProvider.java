@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.providers;
+package org.tint.domain.ssl;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
