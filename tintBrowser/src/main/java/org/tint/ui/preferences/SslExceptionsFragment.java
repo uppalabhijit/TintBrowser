@@ -16,8 +16,8 @@
 package org.tint.ui.preferences;
 
 import org.tint.R;
-import org.tint.providers.SslExceptionsProvider;
-import org.tint.providers.SslExceptionsWrapper;
+import org.tint.domain.ssl.SslExceptionsProvider;
+import org.tint.domain.ssl.SslExceptionsWrapper;
 import org.tint.utils.ApplicationUtils;
 
 import android.app.ListFragment;

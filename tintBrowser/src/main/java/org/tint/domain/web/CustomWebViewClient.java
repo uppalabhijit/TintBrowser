@@ -34,18 +34,17 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Message;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.*;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.tint.R;
-import org.tint.providers.SslExceptionsWrapper;
+import org.tint.domain.ssl.ShowUserSslExceptionVisitor;
+import org.tint.domain.ssl.SslAuthorityStatus;
+import org.tint.domain.ssl.SslExceptionsWrapper;
 import org.tint.ui.managers.UIManager;
 import org.tint.ui.webview.CustomWebView;
 
@@ -87,6 +86,79 @@ public class CustomWebViewClient extends WebViewClient {
         return checkUrlLoading(url);
     }
 
+    private boolean checkUrlLoading(String url) {
+        Intent intent;
+
+        try {
+            intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+        } catch (URISyntaxException e) {
+            Log.w("CustomWebViewClient", "Bad URI " + url + ": " + e.getMessage());
+            return false;
+        }
+
+        if (mUIManager.getMainActivity().getPackageManager().resolveActivity(intent, 0) == null) {
+            String packagename = intent.getPackage();
+            if (packagename != null) {
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + packagename));
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                mUIManager.getMainActivity().startActivity(intent);
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setComponent(null);
+
+        Matcher m = ACCEPTED_URI_SCHEMA.matcher(url);
+        if (m.matches() && !isSpecializedHandlerAvailable(intent)) {
+            return false;
+        }
+
+        try {
+            if (mUIManager.getMainActivity().startActivityIfNeeded(intent, -1)) {
+                return true;
+            }
+        } catch (ActivityNotFoundException ex) {
+            // ignore the error. If no application can handle the URL,
+            // eg about:blank, assume the browser can handle it.
+        }
+
+        return false;
+    }
+
+    /**
+     * Search for intent handlers that are specific to this URL
+     * aka, specialized apps like google maps or youtube
+     */
+    private boolean isSpecializedHandlerAvailable(Intent intent) {
+        PackageManager pm = mUIManager.getMainActivity().getPackageManager();
+        List<ResolveInfo> handlers = pm.queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
+        if (handlers == null || handlers.size() == 0) {
+            return false;
+        }
+
+        for (ResolveInfo resolveInfo : handlers) {
+            IntentFilter filter = resolveInfo.filter;
+            if (filter == null) {
+                // No intent filter matches this intent?
+                // Error on the side of staying in the browser, ignore
+                continue;
+            }
+
+            if (filter.countDataAuthorities() == 0 || filter.countDataPaths() == 0) {
+                // Generic handler, skip
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void onReceivedSslError(final WebView view, final SslErrorHandler handler, SslError error) {
 
@@ -102,91 +174,13 @@ public class CustomWebViewClient extends WebViewClient {
             }
         }
 
-        boolean askUser = true;
-
+        ShowUserSslExceptionVisitor sslExceptionVisitor = new ShowUserSslExceptionVisitor(authority, handler, error);
         if (hasAuthority) {
-            int result = SslExceptionsWrapper.getStatusForAuthority(view.getContext().getContentResolver(), authority);
-
-            switch (result) {
-                case SslExceptionsWrapper.AUTHORITY_UNKNOWN:
-                    askUser = true;
-                    break;
-
-                case SslExceptionsWrapper.AUTHORITY_ALLOWED:
-                    askUser = false;
-                    handler.proceed();
-                    Toast.makeText(view.getContext(), String.format(view.getResources().getString(R.string.SslExceptionAccessAllowedByUserToast), authority), Toast.LENGTH_SHORT).show();
-                    break;
-
-                case SslExceptionsWrapper.AUTHORITY_DISALLOWED:
-                    askUser = false;
-                    handler.cancel();
-                    Toast.makeText(view.getContext(), String.format(view.getResources().getString(R.string.SslExceptionAccessDisallowedByUserToast), authority), Toast.LENGTH_SHORT).show();
-                    break;
-
-                default:
-                    askUser = true;
-                    break;
-            }
+            SslAuthorityStatus result = SslExceptionsWrapper.getStatusForAuthority(view.getContext().getContentResolver(), authority);
+            result.handleSslError(sslExceptionVisitor);
         }
+        sslExceptionVisitor.askUserIfNeeded();
 
-        if (askUser) {
-
-            final int errorCode = SslExceptionsWrapper.sslErrorToInt(error);
-
-            StringBuilder sb = new StringBuilder();
-
-            sb.append(String.format(view.getResources().getString(R.string.SslWarningsHeader), authority));
-            sb.append("\n\n");
-
-            sb.append(Html.fromHtml(SslExceptionsWrapper.sslErrorReasonToString(view.getContext(), errorCode)));
-
-            final String finalAuthority = authority;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setCancelable(true);
-            builder.setIcon(android.R.drawable.ic_dialog_info);
-            builder.setTitle(view.getResources().getString(R.string.SslWarning));
-            builder.setMessage(sb.toString());
-
-            LayoutInflater adbInflater = LayoutInflater.from(view.getContext());
-            View checkBoxLayout = adbInflater.inflate(R.layout.checkbox_layout, null);
-            final CheckBox rememberCheckBox = (CheckBox) checkBoxLayout.findViewById(R.id.RemenberChoiceCheckBox);
-
-            builder.setView(checkBoxLayout);
-
-            builder.setInverseBackgroundForced(true);
-            builder.setPositiveButton(view.getResources().getString(R.string.Continue), new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (rememberCheckBox.isChecked()) {
-                        SslExceptionsWrapper.setSslException(view.getContext().getContentResolver(), finalAuthority, errorCode, true);
-                    }
-
-                    dialog.dismiss();
-                    handler.proceed();
-                }
-
-            });
-
-            builder.setNegativeButton(view.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (rememberCheckBox.isChecked()) {
-                        SslExceptionsWrapper.setSslException(view.getContext().getContentResolver(), finalAuthority, errorCode, false);
-                    }
-
-                    dialog.dismiss();
-                    handler.cancel();
-                }
-
-            });
-
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
     }
 
     @Override
@@ -295,78 +289,6 @@ public class CustomWebViewClient extends WebViewClient {
         }).show();
     }
 
-    /**
-     * Search for intent handlers that are specific to this URL
-     * aka, specialized apps like google maps or youtube
-     */
-    private boolean isSpecializedHandlerAvailable(Intent intent) {
-        PackageManager pm = mUIManager.getMainActivity().getPackageManager();
-        List<ResolveInfo> handlers = pm.queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
-        if (handlers == null || handlers.size() == 0) {
-            return false;
-        }
-
-        for (ResolveInfo resolveInfo : handlers) {
-            IntentFilter filter = resolveInfo.filter;
-            if (filter == null) {
-                // No intent filter matches this intent?
-                // Error on the side of staying in the browser, ignore
-                continue;
-            }
-
-            if (filter.countDataAuthorities() == 0 || filter.countDataPaths() == 0) {
-                // Generic handler, skip
-                continue;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean checkUrlLoading(String url) {
-        Intent intent;
-
-        try {
-            intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-        } catch (URISyntaxException e) {
-            Log.w("CustomWebViewClient", "Bad URI " + url + ": " + e.getMessage());
-            return false;
-        }
-
-        if (mUIManager.getMainActivity().getPackageManager().resolveActivity(intent, 0) == null) {
-            String packagename = intent.getPackage();
-            if (packagename != null) {
-                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + packagename));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                mUIManager.getMainActivity().startActivity(intent);
-
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setComponent(null);
-
-        Matcher m = ACCEPTED_URI_SCHEMA.matcher(url);
-        if (m.matches() && !isSpecializedHandlerAvailable(intent)) {
-            return false;
-        }
-
-        try {
-            if (mUIManager.getMainActivity().startActivityIfNeeded(intent, -1)) {
-                return true;
-            }
-        } catch (ActivityNotFoundException ex) {
-            // ignore the error. If no application can handle the URL,
-            // eg about:blank, assume the browser can handle it.
-        }
-
-        return false;
-    }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {

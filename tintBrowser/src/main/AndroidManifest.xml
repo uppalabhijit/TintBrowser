@@ -87,7 +87,7 @@
                 android:writePermission="org.tint.permissions.bookmarksprovider.WRITE"/>
 
         <provider
-                android:name=".providers.SslExceptionsProvider"
+                android:name=".domain.ssl.SslExceptionsProvider"
                 android:authorities="org.tint.providers.sslexceptionsprovider"
                 android:exported="false"/>
 

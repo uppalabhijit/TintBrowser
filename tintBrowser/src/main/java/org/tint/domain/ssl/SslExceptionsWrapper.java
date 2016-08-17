@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package org.tint.providers;
+package org.tint.domain.ssl;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -34,9 +34,6 @@ public class SslExceptionsWrapper {
             SslExceptionsProvider.Columns.REASON,
             SslExceptionsProvider.Columns.ALLOW};
 
-    public static final int AUTHORITY_UNKNOWN = 0;
-    public static final int AUTHORITY_ALLOWED = 1;
-    public static final int AUTHORITY_DISALLOWED = 2;
 
     // Redefinition of SSL errors constants, because those in Android SslError cannot be used for bitmasks.
     private static final int SSL_UNTRUSTED = 1;
@@ -50,22 +47,24 @@ public class SslExceptionsWrapper {
         return new CursorLoader(context, SslExceptionsProvider.SSL_EXCEPTIONS_URI, SSL_EXCEPTIONS_PROJECTION, null, null, null);
     }
 
-    public static int getStatusForAuthority(ContentResolver contentResolver, String authority) {
-        int result = AUTHORITY_UNKNOWN;
+    public static SslAuthorityStatus getStatusForAuthority(ContentResolver contentResolver, String authority) {
+        SslAuthorityStatus result = SslAuthorityStatus.AUTHORITY_UNKNOWN;
 
         String whereClause = SslExceptionsProvider.Columns.AUTHORITY + " = \"" + authority + "\"";
 
         Cursor c = contentResolver.query(SslExceptionsProvider.SSL_EXCEPTIONS_URI, SSL_EXCEPTIONS_PROJECTION, whereClause, null, null);
         if (c != null) {
-            if (c.moveToFirst()) {
-                if (c.getInt(c.getColumnIndex(SslExceptionsProvider.Columns.ALLOW)) > 0) {
-                    result = AUTHORITY_ALLOWED;
-                } else {
-                    result = AUTHORITY_DISALLOWED;
+            try {
+                if (c.moveToFirst()) {
+                    if (c.getInt(c.getColumnIndex(SslExceptionsProvider.Columns.ALLOW)) > 0) {
+                        result = SslAuthorityStatus.AUTHORITY_ALLOWED;
+                    } else {
+                        result = SslAuthorityStatus.AUTHORITY_DISALLOWED;
+                    }
                 }
+            } finally {
+                c.close();
             }
-
-            c.close();
         }
 
         return result;

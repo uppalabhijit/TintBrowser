@@ -14,14 +14,12 @@ import org.tint.utils.Constants;
  */
 public class BrowserCreateAnchorContextMenuVisitor extends NoopCreateHtmlNodeContextMenuVisitor {
     private final Menu menu;
-    private final WebView.HitTestResult result;
     private final int resultType;
     private final String resultExtra;
     private final boolean mPrivateBrowsing;
 
     public BrowserCreateAnchorContextMenuVisitor(Menu menu, WebView.HitTestResult result, boolean mPrivateBrowsing) {
         this.menu = menu;
-        this.result = result;
         this.resultType = result.getType();
         this.resultExtra = result.getExtra();
         this.mPrivateBrowsing = mPrivateBrowsing;
