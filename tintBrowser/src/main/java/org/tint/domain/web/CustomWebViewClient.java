@@ -294,6 +294,7 @@ public class CustomWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         IAdBlocker iAdBlocker = IAdBlocker.Factory.get();
         if (iAdBlocker.isAd(url)) {
+            getLogger().debug("[CustomWebViewClient][shouldInterceptRequest] found ad at '{}'", url);
             return iAdBlocker.createEmptyResource();
         } else {
             return super.shouldInterceptRequest(view, url);

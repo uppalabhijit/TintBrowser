@@ -107,7 +107,7 @@ public class IOUtils {
             while (inputStream.read(buffer) != -1) {
                 stringBuffer.append(new String(buffer));
             }
-            String[] lines = stringBuffer.toString().split("\\r\\n");
+            String[] lines = stringBuffer.toString().split("\\n");
             for (String str : lines) {
                 result.add(str);
             }
